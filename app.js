@@ -197,10 +197,48 @@ const unitDeepGuides = {
       {
         "title": "肌肉角色",
         "points": [
-          "主动肌：完成主要动作。",
-          "协同肌：帮忙发力。",
-          "拮抗肌：做相反动作。",
+          {
+            "text": "主动肌：完成主要动作。",
+            "images": ["./assets/diagrams/muscle-anterior.svg", "./assets/diagrams/muscle-posterior.svg"]
+          },
+          "协同肌：帮主动肌一起发力。",
+          {
+            "text": "拮抗肌：做相反动作，常用来控制动作速度。",
+            "images": ["./assets/diagrams/muscle-anterior.svg", "./assets/diagrams/muscle-posterior.svg"]
+          },
           "稳定肌：固定姿势或关节。"
+        ]
+      },
+      {
+        "title": "肌肉解剖速查",
+        "points": [
+          {
+            "text": "前侧肌群：胸大肌、三角肌前束、肱二头肌、腹直肌、股四头肌。",
+            "images": ["./assets/diagrams/muscle-anterior.svg"]
+          },
+          {
+            "text": "后侧肌群：斜方肌、背阔肌、竖脊肌、臀大肌、腘绳肌、腓肠肌。",
+            "images": ["./assets/diagrams/muscle-posterior.svg"]
+          },
+          "记肌肉不要背一堆名字，先记它跨过哪个关节、能把关节拉向哪里。"
+        ]
+      },
+      {
+        "title": "收缩类型",
+        "points": [
+          "向心：目标肌缩短，通常是克服阻力的阶段。",
+          "离心：目标肌被拉长，但仍在用力控制阻力。",
+          "等长：关节角度不变，肌肉长度基本不变。",
+          "不要用“上升/下降”硬背；永远看目标肌是在缩短、拉长，还是不变。"
+        ]
+      },
+      {
+        "title": "拮抗肌判断",
+        "points": [
+          "先找本题问的动作：屈、伸、外展、内收或旋转。",
+          "主动肌让动作发生；拮抗肌做相反动作。",
+          "肘屈曲：肱二头肌主动，肱三头肌拮抗。",
+          "膝伸展：股四头肌主动，腘绳肌拮抗。"
         ]
       },
       {
@@ -299,6 +337,15 @@ const unitDeepGuides = {
           "静态：保持末端位置。",
           "PNF：拉伸加收缩。",
           "弹震：风险更高。"
+        ]
+      },
+      {
+        "title": "动作阶段",
+        "points": [
+          "向心：目标肌缩短，动作在克服阻力。",
+          "离心：目标肌变长，动作在控制阻力。",
+          "等长：姿势停住，关节角度基本不变。",
+          "例：深蹲下蹲时股四头肌离心，站起时股四头肌向心。"
         ]
       },
       {
@@ -418,10 +465,19 @@ const unitDeepGuides = {
       {
         "title": "场馆布局",
         "points": [
-          "通道要清楚。",
-          "自由重量区避免穿行。",
-          "器械间距要够。",
-          "地面和线缆防绊倒。"
+          "阻力器械至少间隔 61 cm，最好 91 cm。",
+          "主要走道至少 91 cm，能让轮椅通过。",
+          "循环训练走道约 1.2-2.1 m。",
+          "架子/平台之间约 0.9-1.2 m。"
+        ]
+      },
+      {
+        "title": "安全缓冲区",
+        "points": [
+          "自由重量区避免无关人员穿行。",
+          "落杠区和行走区要分开。",
+          "地面、线缆、垫子不能制造绊倒风险。",
+          "器械之间留空间，是为了监督、进出和紧急处理。"
         ]
       },
       {
@@ -1151,10 +1207,10 @@ function guideImagesForPoint(point) {
     [/强度值|volume-load|repetition-volume|训练量|次数 x 组数|%1RM|负荷|训练变量/, "./assets/diagrams/training-variables.svg"],
     [/力臂|力矩|杠杆|机械优势|阻力线|重力线|阻力臂|关节轴|支点|外部力矩|内部力矩/, "./assets/diagrams/biomechanics-torque.svg"],
     [/碳水|蛋白质|脂肪|水分|电解质|铁|钙|维生素|热量|营养素/, "./assets/diagrams/nutrition-basics.svg"],
-    [/场馆|应急|AED|急救|监督|政策|程序|法律责任|风险管理|设备维护|器材维护|空间|镜子|地面|净空|落杠|碰撞|倾倒/, "./assets/diagrams/facility-safety.svg"],
+ [/场馆|应急|AED|急救|监督|政策|程序|法律责任|风险管理|设备维护|器材维护|空间|镜子|地面|净空|落杠|碰撞|倾倒|走道|间隔|缓冲区/, "./assets/diagrams/facility-safety.svg"],
     [/骨骼|肩胛|胸骨|肋骨|骨盆|脊柱|髋|膝|踝|落地|膝内扣|腰椎/, "./assets/diagrams/skeleton-upper-body.svg"],
-    [/胸大肌|三角肌|股四头肌|肱二头肌|肱三头肌|前侧/, "./assets/diagrams/muscle-anterior.svg"],
-    [/背阔肌|斜方肌|腘绳肌|臀大肌|后侧|竖脊肌/, "./assets/diagrams/muscle-posterior.svg"]
+ [/主动肌|协同肌|拮抗肌|稳定肌|胸大肌|三角肌|股四头肌|肱二头肌|肱三头肌|前侧/, "./assets/diagrams/muscle-anterior.svg"],
+ [/主动肌|协同肌|拮抗肌|稳定肌|背阔肌|斜方肌|腘绳肌|臀大肌|后侧|竖脊肌/, "./assets/diagrams/muscle-posterior.svg"]
   ];
   return [...new Set(rules.filter(([pattern]) => pattern.test(point)).map(([, src]) => src))].slice(0, 2);
 }
