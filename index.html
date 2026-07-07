@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>NSCA-CPT 复习 App</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <img src="./assets/cpt-cover.jpg" alt="NSCA CPT" />
+          <div>
+            <h1>NSCA-CPT</h1>
+            <p>本地复习</p>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <div>
+            <span id="totalQuestions">0</span>
+            <label>题目</label>
+          </div>
+          <div>
+            <span id="wrongCount">0</span>
+            <label>错题</label>
+          </div>
+          <div>
+            <span id="accuracy">0%</span>
+            <label>正确率</label>
+          </div>
+        </div>
+
+        <section class="game-panel" aria-label="每日学习进度">
+          <div class="level-row">
+            <span id="levelBadge" class="level-badge">Lv.1</span>
+            <div>
+              <strong id="totalXp">0 XP</strong>
+              <span id="streakText">连续 0 天</span>
+            </div>
+          </div>
+          <div class="goal-row">
+            <span>今日目标</span>
+            <strong id="dailyGoalText">0 / 150 题</strong>
+          </div>
+          <div class="goal-track" aria-hidden="true">
+            <div id="dailyGoalFill"></div>
+          </div>
+          <div class="mini-metrics">
+            <span id="comboText">连答 0</span>
+            <span id="bestComboText">最佳 0</span>
+          </div>
+        </section>
+
+        <nav id="unitNav" class="unit-nav" aria-label="单元"></nav>
+
+        <div class="sidebar-footer">
+          <button id="resetProgressBtn" class="ghost-button" type="button">清空本地进度</button>
+        </div>
+      </aside>
+
+      <main class="main-panel">
+        <header class="topbar">
+          <div class="tabs" role="tablist" aria-label="视图">
+            <button class="tab active" type="button" data-view="quiz">刷题</button>
+            <button class="tab" type="button" data-view="notes">重点</button>
+            <button class="tab" type="button" data-view="wrong">错题本</button>
+            <button class="tab" type="button" data-view="bank">题库</button>
+            <button class="tab" type="button" data-view="materials">资料</button>
+          </div>
+          <div class="toolbar">
+            <select id="unitSelect" aria-label="选择单元"></select>
+            <select id="modeSelect" aria-label="刷题模式">
+              <option value="sequential">顺序</option>
+              <option value="random">随机</option>
+              <option value="curated">重点题</option>
+              <option value="wrong">错题</option>
+            </select>
+          </div>
+        </header>
+
+        <section id="quizView" class="view active">
+          <div class="quiz-layout">
+            <section class="question-card">
+              <div class="question-meta">
+                <span id="questionUnit">单元</span>
+                <span id="questionProgress">0 / 0</span>
+              </div>
+              <div id="instantFeedback" class="instant-feedback hidden" aria-live="polite"></div>
+              <div id="rewardToast" class="reward-toast hidden" aria-live="polite"></div>
+              <h2 id="questionText"></h2>
+              <img id="questionImage" class="question-image hidden" alt="" />
+              <div id="choiceList" class="choice-list"></div>
+              <div id="resultPanel" class="result-panel hidden"></div>
+              <div class="question-actions">
+                <button id="prevBtn" class="secondary-button" type="button">上一题</button>
+                <button id="nextBtn" class="primary-button" type="button">下一题</button>
+              </div>
+            </section>
+
+            <aside class="focus-panel">
+              <h3 id="focusTitle">单元重点</h3>
+              <ul id="focusPoints"></ul>
+            </aside>
+          </div>
+        </section>
+
+        <section id="notesView" class="view">
+          <div id="notesGrid" class="notes-grid"></div>
+        </section>
+
+        <section id="wrongView" class="view">
+          <div class="section-head">
+            <h2>自动错题本</h2>
+            <button id="reviewWrongBtn" class="primary-button" type="button">只刷错题</button>
+          </div>
+          <div id="wrongList" class="list-panel"></div>
+        </section>
+
+        <section id="bankView" class="view">
+          <div class="section-head">
+            <h2>题库检索</h2>
+            <input id="searchInput" type="search" placeholder="搜索题干、选项或来源" />
+          </div>
+          <div id="bankList" class="list-panel"></div>
+        </section>
+
+        <section id="materialsView" class="view">
+          <div class="section-head">
+            <h2>资料读取状态</h2>
+          </div>
+          <div id="materialsList" class="materials-list"></div>
+        </section>
+      </main>
+    </div>
+
+    <script src="./data.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>

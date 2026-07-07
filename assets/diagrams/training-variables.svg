@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 520" role="img" aria-labelledby="title desc">
+  <title id="title">训练变量关系图</title>
+  <desc id="desc">强度、次数、组数、休息和频率共同决定训练刺激，volume-load 和 repetition-volume 不是强度值。</desc>
+  <rect width="920" height="520" fill="#f8fbf9"/>
+  <text x="70" y="58" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="30" font-weight="800" fill="#17201a">训练变量怎么判断</text>
+  <text x="70" y="90" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="16" fill="#59665d">题目问“质量”常看强度；题目问“做了多少”常看训练量。</text>
+  <g transform="translate(80 135)">
+    <rect x="0" y="0" width="230" height="250" rx="16" fill="#ffffff" stroke="#d6dfda" stroke-width="2"/>
+    <text x="115" y="48" text-anchor="middle" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="24" font-weight="800" fill="#1f6f91">强度值</text>
+    <text x="32" y="92" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="16" fill="#17201a">负荷相对大小</text>
+    <text x="32" y="124" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="16" fill="#17201a">例：%1RM、速度、RPE</text>
+    <text x="32" y="164" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="15" fill="#59665d">更能体现训练质量</text>
+    <rect x="32" y="188" width="166" height="28" rx="14" fill="#dceef8"/>
+    <text x="115" y="208" text-anchor="middle" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="14" font-weight="700" fill="#1f6f91">质量问题优先看它</text>
+  </g>
+  <g transform="translate(345 135)">
+    <rect x="0" y="0" width="230" height="250" rx="16" fill="#ffffff" stroke="#d6dfda" stroke-width="2"/>
+    <text x="115" y="48" text-anchor="middle" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="24" font-weight="800" fill="#8a6414">volume-load</text>
+    <text x="32" y="92" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="16" fill="#17201a">累计举起重量</text>
+    <text x="32" y="124" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="16" fill="#17201a">负荷 x 次数 x 组数</text>
+    <text x="32" y="164" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="15" fill="#59665d">回答总工作量</text>
+    <rect x="32" y="188" width="166" height="28" rx="14" fill="#fff0d4"/>
+    <text x="115" y="208" text-anchor="middle" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="14" font-weight="700" fill="#8a6414">数量，不是质量</text>
+  </g>
+  <g transform="translate(610 135)">
+    <rect x="0" y="0" width="230" height="250" rx="16" fill="#ffffff" stroke="#d6dfda" stroke-width="2"/>
+    <text x="115" y="48" text-anchor="middle" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="24" font-weight="800" fill="#6f3f88">repetition-volume</text>
+    <text x="32" y="92" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="16" fill="#17201a">总重复次数</text>
+    <text x="32" y="124" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="16" fill="#17201a">次数 x 组数</text>
+    <text x="32" y="164" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="15" fill="#59665d">不包含负荷大小</text>
+    <rect x="32" y="188" width="166" height="28" rx="14" fill="#f0e4f5"/>
+    <text x="115" y="208" text-anchor="middle" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="14" font-weight="700" fill="#6f3f88">次数统计</text>
+  </g>
+  <text x="80" y="445" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="16" fill="#59665d">常见陷阱：训练量越大不等于强度越高；休息间歇会影响下一组输出质量。</text>
+</svg>

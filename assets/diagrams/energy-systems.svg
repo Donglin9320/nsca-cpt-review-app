@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 520" role="img" aria-labelledby="title desc">
+  <title id="title">三大供能系统速记图</title>
+  <desc id="desc">ATP-PC、糖酵解和有氧氧化按运动持续时间和强度切换主导地位。</desc>
+  <rect width="920" height="520" fill="#f8fbf9"/>
+  <text x="70" y="58" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="30" font-weight="800" fill="#17201a">三大供能系统</text>
+  <text x="70" y="90" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="16" fill="#59665d">判断口诀：越短越爆发，越依赖 ATP-PC；时间越长，越依赖有氧系统。</text>
+  <line x1="95" y1="398" x2="825" y2="398" stroke="#334139" stroke-width="4"/>
+  <polygon points="825,398 805,386 805,410" fill="#334139"/>
+  <text x="95" y="432" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="15" fill="#334139">0 秒</text>
+  <text x="255" y="432" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="15" fill="#334139">10 秒</text>
+  <text x="455" y="432" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="15" fill="#334139">1-2 分钟</text>
+  <text x="720" y="432" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="15" fill="#334139">长时间</text>
+  <text x="710" y="470" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="16" fill="#59665d">持续时间增加</text>
+
+  <g transform="translate(85 150)">
+    <rect x="0" y="0" width="220" height="190" rx="14" fill="#ffffff" stroke="#d6dfda" stroke-width="2"/>
+    <rect x="0" y="0" width="220" height="18" rx="9" fill="#e1523d"/>
+    <text x="110" y="54" text-anchor="middle" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="24" font-weight="800" fill="#9d2c1f">ATP-PC</text>
+    <text x="26" y="88" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="16" fill="#17201a">主场景：1 次爆发</text>
+    <text x="26" y="118" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="16" fill="#17201a">例：高翻、起跑、跳跃</text>
+    <text x="26" y="148" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="15" fill="#59665d">快，但容量小</text>
+  </g>
+  <g transform="translate(350 150)">
+    <rect x="0" y="0" width="220" height="190" rx="14" fill="#ffffff" stroke="#d6dfda" stroke-width="2"/>
+    <rect x="0" y="0" width="220" height="18" rx="9" fill="#d7931f"/>
+    <text x="110" y="54" text-anchor="middle" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="24" font-weight="800" fill="#9a6615">糖酵解</text>
+    <text x="26" y="88" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="16" fill="#17201a">主场景：高强度持续</text>
+    <text x="26" y="118" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="16" fill="#17201a">例：冲刺间歇、无氧能力</text>
+    <text x="26" y="148" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="15" fill="#59665d">速度中等，容量中等</text>
+  </g>
+  <g transform="translate(615 150)">
+    <rect x="0" y="0" width="220" height="190" rx="14" fill="#ffffff" stroke="#d6dfda" stroke-width="2"/>
+    <rect x="0" y="0" width="220" height="18" rx="9" fill="#258261"/>
+    <text x="110" y="54" text-anchor="middle" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="24" font-weight="800" fill="#176247">有氧氧化</text>
+    <text x="26" y="88" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="16" fill="#17201a">主场景：长时间活动</text>
+    <text x="26" y="118" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="16" fill="#17201a">例：耐力训练、恢复</text>
+    <text x="26" y="148" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="15" fill="#59665d">慢，但容量大</text>
+  </g>
+</svg>

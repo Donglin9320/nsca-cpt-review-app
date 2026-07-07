@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 520" role="img" aria-labelledby="title desc">
+  <title id="title">场馆安全与应急流程</title>
+  <desc id="desc">用四个模块理解训练场馆管理：风险筛查、合理监督、设备环境和应急行动计划。</desc>
+  <rect width="920" height="520" fill="#f8fbf9"/>
+  <text x="70" y="58" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="30" font-weight="800" fill="#17201a">场馆安全与应急流程</text>
+  <text x="70" y="90" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="16" fill="#59665d">考试判断：先降低风险，再看监督、设备、环境和应急责任是否清楚。</text>
+  <g transform="translate(82 135)">
+    <rect width="170" height="210" rx="16" fill="#ffffff" stroke="#d6dfda" stroke-width="2"/>
+    <circle cx="85" cy="58" r="34" fill="#dceef8" stroke="#2278a8" stroke-width="3"/>
+    <text x="85" y="66" text-anchor="middle" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="20" font-weight="800" fill="#195a7f">筛</text>
+    <text x="85" y="118" text-anchor="middle" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="20" font-weight="800" fill="#17201a">风险筛查</text>
+    <text x="85" y="152" text-anchor="middle" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="15" fill="#59665d">健康史</text>
+    <text x="85" y="178" text-anchor="middle" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="15" fill="#59665d">知情同意</text>
+  </g>
+  <g transform="translate(285 135)">
+    <rect width="170" height="210" rx="16" fill="#ffffff" stroke="#d6dfda" stroke-width="2"/>
+    <circle cx="85" cy="58" r="34" fill="#e9f3df" stroke="#5a8f35" stroke-width="3"/>
+    <text x="85" y="66" text-anchor="middle" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="20" font-weight="800" fill="#3f6b24">看</text>
+    <text x="85" y="118" text-anchor="middle" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="20" font-weight="800" fill="#17201a">合理监督</text>
+    <text x="85" y="152" text-anchor="middle" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="15" fill="#59665d">合格人员</text>
+    <text x="85" y="178" text-anchor="middle" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="15" fill="#59665d">适当比例</text>
+  </g>
+  <g transform="translate(488 135)">
+    <rect width="170" height="210" rx="16" fill="#ffffff" stroke="#d6dfda" stroke-width="2"/>
+    <circle cx="85" cy="58" r="34" fill="#fff0d4" stroke="#d08a12" stroke-width="3"/>
+    <text x="85" y="66" text-anchor="middle" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="20" font-weight="800" fill="#9a6410">查</text>
+    <text x="85" y="118" text-anchor="middle" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="20" font-weight="800" fill="#17201a">设备环境</text>
+    <text x="85" y="152" text-anchor="middle" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="15" fill="#59665d">器材维护</text>
+    <text x="85" y="178" text-anchor="middle" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="15" fill="#59665d">空间照明</text>
+  </g>
+  <g transform="translate(691 135)">
+    <rect width="170" height="210" rx="16" fill="#ffffff" stroke="#d6dfda" stroke-width="2"/>
+    <circle cx="85" cy="58" r="34" fill="#f4dfed" stroke="#a23b78" stroke-width="3"/>
+    <text x="85" y="66" text-anchor="middle" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="20" font-weight="800" fill="#7c2e5d">救</text>
+    <text x="85" y="118" text-anchor="middle" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="20" font-weight="800" fill="#17201a">应急计划</text>
+    <text x="85" y="152" text-anchor="middle" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="15" fill="#59665d">人员分工</text>
+    <text x="85" y="178" text-anchor="middle" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="15" fill="#59665d">通信/AED</text>
+  </g>
+  <path d="M252 240 H285 M455 240 H488 M658 240 H691" stroke="#7b8a80" stroke-width="4" stroke-linecap="round" stroke-dasharray="8 8"/>
+  <text x="82" y="430" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="16" fill="#59665d">易错点：政策说明规则，程序说明步骤；私人教练不能诊断、治疗或开医疗/营养处方。</text>
+</svg>

@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 520" role="img" aria-labelledby="title desc">
+  <title id="title">测试质量四要素</title>
+  <desc id="desc">有效性、可靠性、客观性和特异性是体适能测试选择与解释的常见判断原则。</desc>
+  <rect width="920" height="520" fill="#f8fbf9"/>
+  <text x="70" y="58" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="30" font-weight="800" fill="#17201a">测试质量四要素</text>
+  <text x="70" y="90" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="16" fill="#59665d">选测试时先问：测得准不准、稳不稳、评分是否一致、是否贴近目标。</text>
+  <g transform="translate(80 140)">
+    <rect x="0" y="0" width="360" height="130" rx="14" fill="#ffffff" stroke="#d6dfda" stroke-width="2"/>
+    <circle cx="62" cy="65" r="36" fill="#dceef8" stroke="#2278a8" stroke-width="3"/>
+    <text x="62" y="72" text-anchor="middle" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="22" font-weight="800" fill="#195a7f">准</text>
+    <text x="120" y="52" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="22" font-weight="800" fill="#17201a">有效性</text>
+    <text x="120" y="84" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="16" fill="#59665d">是否测到真正想测的能力</text>
+  </g>
+  <g transform="translate(480 140)">
+    <rect x="0" y="0" width="360" height="130" rx="14" fill="#ffffff" stroke="#d6dfda" stroke-width="2"/>
+    <circle cx="62" cy="65" r="36" fill="#e9f3df" stroke="#5a8f35" stroke-width="3"/>
+    <text x="62" y="72" text-anchor="middle" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="22" font-weight="800" fill="#3f6b24">稳</text>
+    <text x="120" y="52" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="22" font-weight="800" fill="#17201a">可靠性</text>
+    <text x="120" y="84" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="16" fill="#59665d">同样条件下结果是否稳定</text>
+  </g>
+  <g transform="translate(80 310)">
+    <rect x="0" y="0" width="360" height="130" rx="14" fill="#ffffff" stroke="#d6dfda" stroke-width="2"/>
+    <circle cx="62" cy="65" r="36" fill="#fff0d4" stroke="#d08a12" stroke-width="3"/>
+    <text x="62" y="72" text-anchor="middle" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="22" font-weight="800" fill="#9a6410">同</text>
+    <text x="120" y="52" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="22" font-weight="800" fill="#17201a">客观性</text>
+    <text x="120" y="84" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="16" fill="#59665d">不同评估者是否能给出一致结果</text>
+  </g>
+  <g transform="translate(480 310)">
+    <rect x="0" y="0" width="360" height="130" rx="14" fill="#ffffff" stroke="#d6dfda" stroke-width="2"/>
+    <circle cx="62" cy="65" r="36" fill="#f4dfed" stroke="#a23b78" stroke-width="3"/>
+    <text x="62" y="72" text-anchor="middle" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="22" font-weight="800" fill="#7c2e5d">像</text>
+    <text x="120" y="52" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="22" font-weight="800" fill="#17201a">特异性</text>
+    <text x="120" y="84" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="16" fill="#59665d">是否贴近项目、动作或客户目标</text>
+  </g>
+</svg>

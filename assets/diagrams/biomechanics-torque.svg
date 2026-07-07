@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 620" role="img" aria-labelledby="title desc">
+  <title id="title">力臂、力矩与关节负荷示意图</title>
+  <desc id="desc">力矩等于力乘以垂直力臂。外部阻力线离关节轴越远，关节需要抵抗的力矩越大。</desc>
+  <rect width="960" height="620" fill="#f8fbf9"/>
+  <g font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif">
+    <text x="64" y="58" font-size="30" font-weight="800" fill="#17201a">力臂与力矩：NSCA-CPT 做题版</text>
+    <text x="64" y="92" font-size="17" fill="#526158">不要只看重量，看“力的作用线”离关节轴有多远。</text>
+
+    <g transform="translate(64 130)">
+      <rect x="0" y="0" width="392" height="398" rx="14" fill="#ffffff" stroke="#d7e0da" stroke-width="2"/>
+      <text x="24" y="36" font-size="22" font-weight="800" fill="#0f5f8c">核心公式</text>
+      <text x="24" y="72" font-size="20" font-weight="800" fill="#17201a">力矩 = 力 × 垂直力臂</text>
+      <text x="24" y="102" font-size="15" fill="#526158">Torque = Force × Moment Arm</text>
+
+      <circle cx="118" cy="238" r="14" fill="#17201a"/>
+      <text x="70" y="274" font-size="15" fill="#17201a">关节轴</text>
+      <line x1="118" y1="238" x2="290" y2="238" stroke="#df7a18" stroke-width="8" stroke-linecap="round"/>
+      <line x1="290" y1="92" x2="290" y2="348" stroke="#b42318" stroke-width="4" stroke-dasharray="8 7"/>
+      <path d="M290 108 L290 170" stroke="#b42318" stroke-width="8" stroke-linecap="round"/>
+      <path d="M270 150 L290 178 L310 150" fill="none" stroke="#b42318" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="236" y="80" font-size="15" font-weight="800" fill="#b42318">外部阻力线</text>
+
+      <line x1="118" y1="220" x2="290" y2="220" stroke="#0f5f8c" stroke-width="4" stroke-dasharray="6 6"/>
+      <path d="M118 220 L132 212 M118 220 L132 228 M290 220 L276 212 M290 220 L276 228" stroke="#0f5f8c" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <text x="152" y="209" font-size="15" font-weight="800" fill="#0f5f8c">阻力臂</text>
+
+      <path d="M118 238 C138 196 170 166 218 148" fill="none" stroke="#287248" stroke-width="7" stroke-linecap="round"/>
+      <line x1="118" y1="238" x2="190" y2="188" stroke="#287248" stroke-width="3" stroke-dasharray="5 5"/>
+      <text x="176" y="142" font-size="15" font-weight="800" fill="#287248">肌肉拉力线</text>
+      <text x="24" y="352" font-size="15" fill="#526158">外部力矩越大，目标肌群/稳定肌需要产生越大的内部力矩。</text>
+    </g>
+
+    <g transform="translate(504 130)">
+      <rect x="0" y="0" width="392" height="398" rx="14" fill="#ffffff" stroke="#d7e0da" stroke-width="2"/>
+      <text x="24" y="36" font-size="22" font-weight="800" fill="#287248">训练动作怎么判断</text>
+
+      <g transform="translate(42 76)">
+        <line x1="0" y1="220" x2="300" y2="220" stroke="#d7e0da" stroke-width="6" stroke-linecap="round"/>
+        <circle cx="96" cy="160" r="10" fill="#17201a"/>
+        <circle cx="188" cy="170" r="10" fill="#17201a"/>
+        <circle cx="242" cy="220" r="10" fill="#17201a"/>
+        <path d="M96 160 L188 170 L242 220" fill="none" stroke="#49574f" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M96 160 C80 124 86 88 116 62" fill="none" stroke="#49574f" stroke-width="12" stroke-linecap="round"/>
+        <circle cx="122" cy="46" r="24" fill="#f0d7c7" stroke="#49574f" stroke-width="4"/>
+        <line x1="62" y1="82" x2="214" y2="82" stroke="#df7a18" stroke-width="10" stroke-linecap="round"/>
+        <line x1="142" y1="34" x2="142" y2="232" stroke="#b42318" stroke-width="4" stroke-dasharray="8 7"/>
+        <text x="166" y="68" font-size="14" font-weight="800" fill="#b42318">杠铃重力线</text>
+        <line x1="96" y1="148" x2="142" y2="148" stroke="#0f5f8c" stroke-width="4" stroke-dasharray="6 6"/>
+        <line x1="188" y1="158" x2="142" y2="158" stroke="#a85a00" stroke-width="4" stroke-dasharray="6 6"/>
+        <text x="42" y="138" font-size="14" fill="#0f5f8c">髋阻力臂</text>
+        <text x="196" y="150" font-size="14" fill="#a85a00">膝阻力臂</text>
+      </g>
+
+      <text x="24" y="318" font-size="15" fill="#17201a">考场判断顺序：</text>
+      <text x="24" y="346" font-size="15" fill="#526158">1. 先找关节轴：肩、肘、髋、膝、踝。</text>
+      <text x="24" y="372" font-size="15" fill="#526158">2. 再画阻力线：多数自由重量是垂直向下。</text>
+      <text x="24" y="398" font-size="15" fill="#526158">3. 垂直距离越大，该关节外部力矩越大。</text>
+    </g>
+
+    <g transform="translate(64 556)">
+      <rect x="0" y="-26" width="832" height="42" rx="10" fill="#eef6f0" stroke="#cbd8cf"/>
+      <text x="18" y="0" font-size="16" font-weight="800" fill="#17201a">一句话记忆：</text>
+      <text x="116" y="0" font-size="16" fill="#17201a">重量不变时，离关节越远越难；角度改变时，难点会跟着力臂改变。</text>
+    </g>
+  </g>
+</svg>
