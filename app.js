@@ -632,16 +632,20 @@ function renderAnswerSearchTools(question) {
   const googleQuery = `NSCA CPT ${question.question} ${question.choices[question.answer]}`;
   const googleUrl = `https://www.google.com/search?q=${encodeURIComponent(googleQuery)}`;
   const chatgptUrl = `https://chatgpt.com/?q=${encodeURIComponent(prompt)}`;
+  const geminiWebUrl = "https://gemini.google.com/";
+  const geminiAndroidIntent = `intent://gemini.google.com/#Intent;scheme=https;package=com.google.android.apps.bard;S.browser_fallback_url=${encodeURIComponent(geminiWebUrl)};end`;
   return `
     <section class="answer-search-panel" aria-label="外部查询">
       <div>
         <strong>还是不懂？</strong>
-        <span>打开外部搜索，不需要在本 App 里放 API key。</span>
+        <span>先复制提示词，再打开搜索或 Gemini。</span>
       </div>
       <div class="answer-search-actions">
+        <button class="secondary-button" type="button" data-copy-prompt="${escapeAttribute(prompt)}">复制提示词</button>
         <a class="secondary-button" href="${googleUrl}" target="_blank" rel="noopener noreferrer">Google 查</a>
         <a class="secondary-button" href="${chatgptUrl}" target="_blank" rel="noopener noreferrer">问 ChatGPT</a>
-        <a class="secondary-button" href="https://gemini.google.com/" target="_blank" rel="noopener noreferrer" data-copy-prompt="${escapeAttribute(prompt)}">复制并新开 Gemini</a>
+        <a class="secondary-button" href="${geminiAndroidIntent}">打开 Gemini App（安卓）</a>
+        <a class="secondary-button" href="${geminiWebUrl}" target="_blank" rel="noopener noreferrer">Gemini 网页</a>
       </div>
     </section>
   `;
@@ -649,16 +653,12 @@ function renderAnswerSearchTools(question) {
 
 async function copyPromptAndOpen(button) {
   const promptText = button.dataset.copyPrompt || "";
-  const openUrl = button.dataset.openUrl;
-  const shouldOpenWithScript = Boolean(openUrl);
-  const openedWindow = shouldOpenWithScript ? window.open(openUrl, "_blank") : null;
   try {
     await navigator.clipboard.writeText(promptText);
     button.textContent = "已复制";
   } catch (error) {
     window.prompt("复制下面这段内容到 Gemini：", promptText);
   }
-  if (shouldOpenWithScript && !openedWindow) window.location.href = openUrl;
 }
 
 function renderZoomableImage({ src, title, caption = "", alt = title || "辅助理解图" }) {
