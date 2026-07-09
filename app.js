@@ -613,6 +613,52 @@ function escapeAttribute(value = "") {
   })[char]);
 }
 
+function buildQuestionSearchPrompt(question) {
+  const choices = Object.entries(question.choices)
+    .map(([label, text]) => `${label}. ${text}`)
+    .join("\n");
+  return [
+    "请用中文、按 NSCA-CPT 考试语境，用最简单的话解释这道题。",
+    "请说明：为什么正确答案对、其他选项为什么不选。",
+    "",
+    `题目：${question.question}`,
+    choices,
+    `正确答案：${question.answer}. ${question.choices[question.answer]}`,
+  ].join("\n");
+}
+
+function renderAnswerSearchTools(question) {
+  const prompt = buildQuestionSearchPrompt(question);
+  const googleQuery = `NSCA CPT ${question.question} ${question.choices[question.answer]}`;
+  const googleUrl = `https://www.google.com/search?q=${encodeURIComponent(googleQuery)}`;
+  const chatgptUrl = `https://chatgpt.com/?q=${encodeURIComponent(prompt)}`;
+  return `
+    <section class="answer-search-panel" aria-label="外部查询">
+      <div>
+        <strong>还是不懂？</strong>
+        <span>打开外部搜索，不需要在本 App 里放 API key。</span>
+      </div>
+      <div class="answer-search-actions">
+        <a class="secondary-button" href="${googleUrl}" target="_blank" rel="noopener noreferrer">Google 查</a>
+        <a class="secondary-button" href="${chatgptUrl}" target="_blank" rel="noopener noreferrer">问 ChatGPT</a>
+        <button class="secondary-button" type="button" data-copy-prompt="${escapeAttribute(prompt)}" data-open-url="https://gemini.google.com/app">复制给 Gemini</button>
+      </div>
+    </section>
+  `;
+}
+
+async function copyPromptAndOpen(button) {
+  const promptText = button.dataset.copyPrompt || "";
+  const openUrl = button.dataset.openUrl;
+  try {
+    await navigator.clipboard.writeText(promptText);
+    button.textContent = "已复制，打开 Gemini";
+  } catch (error) {
+    window.prompt("复制下面这段内容到 Gemini：", promptText);
+  }
+  if (openUrl) window.open(openUrl, "_blank", "noopener,noreferrer");
+}
+
 function renderZoomableImage({ src, title, caption = "", alt = title || "辅助理解图" }) {
   const label = title || alt || "辅助理解图";
   return `
@@ -1160,6 +1206,7 @@ function renderAnswer(choice) {
     <h3>${correct ? "回答正确" : `回答错误，正确答案是 ${question.answer}`}</h3>
     ${renderExplanationImages(question)}
     <div class="explanation-list">${rows}</div>
+    ${renderAnswerSearchTools(question)}
   `;
   els.resultPanel.classList.remove("hidden");
 }
@@ -1514,6 +1561,9 @@ function bindEvents() {
 
     const removeButton = event.target.closest("[data-remove]");
     if (removeButton) removeWrong(removeButton.dataset.remove);
+
+    const copyPromptButton = event.target.closest("[data-copy-prompt]");
+    if (copyPromptButton) copyPromptAndOpen(copyPromptButton);
   });
 
   document.addEventListener("keydown", (event) => {
