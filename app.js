@@ -641,7 +641,7 @@ function renderAnswerSearchTools(question) {
       <div class="answer-search-actions">
         <a class="secondary-button" href="${googleUrl}" target="_blank" rel="noopener noreferrer">Google 查</a>
         <a class="secondary-button" href="${chatgptUrl}" target="_blank" rel="noopener noreferrer">问 ChatGPT</a>
-        <button class="secondary-button" type="button" data-copy-prompt="${escapeAttribute(prompt)}" data-open-url="https://gemini.google.com/app">复制给 Gemini</button>
+        <button class="secondary-button" type="button" data-copy-prompt="${escapeAttribute(prompt)}" data-open-url="https://gemini.google.com/">复制并打开 Gemini</button>
       </div>
     </section>
   `;
@@ -650,13 +650,14 @@ function renderAnswerSearchTools(question) {
 async function copyPromptAndOpen(button) {
   const promptText = button.dataset.copyPrompt || "";
   const openUrl = button.dataset.openUrl;
+  const openedWindow = openUrl ? window.open(openUrl, "_blank") : null;
   try {
     await navigator.clipboard.writeText(promptText);
-    button.textContent = "已复制，打开 Gemini";
+    button.textContent = "已复制";
   } catch (error) {
     window.prompt("复制下面这段内容到 Gemini：", promptText);
   }
-  if (openUrl) window.open(openUrl, "_blank", "noopener,noreferrer");
+  if (openUrl && !openedWindow) window.location.href = openUrl;
 }
 
 function renderZoomableImage({ src, title, caption = "", alt = title || "辅助理解图" }) {
