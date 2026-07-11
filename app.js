@@ -613,39 +613,47 @@ function escapeAttribute(value = "") {
   })[char]);
 }
 
-function buildQuestionSearchPrompt(question) {
+function buildQuestionSearchPrompt(question, selectedChoice) {
   const choices = Object.entries(question.choices)
     .map(([label, text]) => `${label}. ${text}`)
     .join("\n");
   return [
-    "请用中文、按 NSCA-CPT 考试语境，用最简单的话解释这道题。",
-    "请说明：为什么正确答案对、其他选项为什么不选。",
+    "我正在复习 NSCA-CPT。请用自然、直接的中文帮我理解这道题。",
     "",
     `题目：${question.question}`,
     choices,
+    selectedChoice ? `我选择了：${selectedChoice}. ${question.choices[selectedChoice]}` : "",
     `正确答案：${question.answer}. ${question.choices[question.answer]}`,
-  ].join("\n");
+    "",
+    "请重点回答：",
+    "1. 为什么正确答案是对的？",
+    "2. 为什么我选择的答案不对？",
+    "3. 两个选项最关键的区别是什么？",
+    "4. 下次遇到类似题，我应该抓住哪个关键词或判断步骤？",
+    "请控制长度，不要使用生硬的英文直译。",
+  ].filter(Boolean).join("\n");
 }
 
-function renderAnswerSearchTools(question) {
-  const prompt = buildQuestionSearchPrompt(question);
-  const googleQuery = `NSCA CPT ${question.question} ${question.choices[question.answer]}`;
-  const googleUrl = `https://www.google.com/search?q=${encodeURIComponent(googleQuery)}`;
-  const chatgptUrl = `https://chatgpt.com/?q=${encodeURIComponent(prompt)}`;
+function renderAnswerSearchTools(question, selectedChoice) {
+  const prompt = buildQuestionSearchPrompt(question, selectedChoice);
   const geminiWebUrl = "https://gemini.google.com/";
   const geminiAndroidIntent = `intent://gemini.google.com/#Intent;scheme=https;package=com.google.android.apps.bard;S.browser_fallback_url=${encodeURIComponent(geminiWebUrl)};end`;
   return `
-    <section class="answer-search-panel" aria-label="外部查询">
+    <section class="answer-search-panel" aria-label="用 AI 继续追问">
       <div>
-        <strong>还是不懂？</strong>
-        <span>先复制提示词，再打开搜索或 Gemini。</span>
+        <strong>需要更详细的解释？</strong>
+        <span>提示词已包含正确答案和你的选择。</span>
       </div>
       <div class="answer-search-actions">
-        <button class="secondary-button" type="button" data-copy-prompt="${escapeAttribute(prompt)}">复制提示词</button>
-        <a class="secondary-button" href="${googleUrl}" target="_blank" rel="noopener noreferrer">Google 查</a>
-        <a class="secondary-button" href="${chatgptUrl}" target="_blank" rel="noopener noreferrer">问 ChatGPT</a>
-        <a class="secondary-button" href="${geminiAndroidIntent}">打开 Gemini App（安卓）</a>
-        <a class="secondary-button" href="${geminiWebUrl}" target="_blank" rel="noopener noreferrer">Gemini 网页</a>
+        <a class="ai-primary-button" href="${geminiAndroidIntent}" data-copy-prompt="${escapeAttribute(prompt)}">复制并打开 Gemini</a>
+        <details class="ai-provider-menu">
+          <summary aria-label="选择其他 AI">其他 AI</summary>
+          <div>
+            <a href="https://chat.deepseek.com/" target="_blank" rel="noopener noreferrer" data-copy-prompt="${escapeAttribute(prompt)}">DeepSeek</a>
+            <a href="https://www.doubao.com/chat/" target="_blank" rel="noopener noreferrer" data-copy-prompt="${escapeAttribute(prompt)}">豆包</a>
+            <button type="button" data-copy-prompt="${escapeAttribute(prompt)}">仅复制提示词</button>
+          </div>
+        </details>
       </div>
     </section>
   `;
@@ -655,7 +663,7 @@ async function copyPromptAndOpen(button) {
   const promptText = button.dataset.copyPrompt || "";
   try {
     await navigator.clipboard.writeText(promptText);
-    button.textContent = "已复制";
+    if (button.tagName === "BUTTON") button.textContent = "已复制";
   } catch (error) {
     window.prompt("复制下面这段内容到 Gemini：", promptText);
   }
@@ -1191,24 +1199,21 @@ function renderAnswer(choice) {
   });
 
   const correct = choice === question.answer;
-  const rows = Object.entries(question.choices)
-    .map(([label, text]) => {
-      const rowClass = label === question.answer ? "correct" : "wrong";
-    const explanation = `${question.explanations?.[label] || ""}${buildExplanationAddenda(text)}`;
-      return `
-        <div class="explanation-row ${rowClass}">
-          <strong>${label}</strong>
-          <div><strong>${text}</strong><br />${explanation}</div>
-        </div>
-      `;
-    })
-    .join("");
+  const correctText = question.choices[question.answer];
+  const correctExplanation = question.explanations?.[question.answer] || "它最符合题干所考的判断标准。";
+  const selectedExplanation = question.explanations?.[choice] || "它不符合题干所考的判断标准。";
 
   els.resultPanel.innerHTML = `
-    <h3>${correct ? "回答正确" : `回答错误，正确答案是 ${question.answer}`}</h3>
+    <div class="result-heading">
+      <span class="result-status ${correct ? "correct" : "wrong"}">${correct ? "答对了" : "答错了"}</span>
+      <strong>正确答案：${question.answer}. ${correctText}</strong>
+    </div>
     ${renderExplanationImages(question)}
-    <div class="explanation-list">${rows}</div>
-    ${renderAnswerSearchTools(question)}
+    <div class="answer-reasons">
+      <p><strong>为什么：</strong>${correctExplanation}</p>
+      ${correct ? "" : `<p><strong>你选的 ${choice} 为什么不对：</strong>${selectedExplanation}</p>`}
+    </div>
+    ${renderAnswerSearchTools(question, choice)}
   `;
   els.resultPanel.classList.remove("hidden");
 }
