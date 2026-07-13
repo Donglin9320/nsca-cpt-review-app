@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f5f5f7">
+  <title>NSCA-CPT 结构原型 V1</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <header class="global-header">
+    <div class="header-inner">
+      <a class="brand" href="#quiz" data-nav="quiz" aria-label="返回刷题">
+        <span class="brand-mark">CPT</span>
+        <span><strong>NSCA-CPT</strong><small>个人复习</small></span>
+      </a>
+      <nav class="desktop-nav" aria-label="主要功能">
+        <button class="nav-item active" data-nav="quiz">刷题</button>
+        <button class="nav-item" data-nav="notes">重点</button>
+        <button class="nav-item" data-nav="weak">薄弱点</button>
+        <button class="nav-item" data-nav="search">搜索</button>
+      </nav>
+      <span class="header-progress">今日 36 / 50</span>
+    </div>
+  </header>
+
+  <div class="workspace">
+    <aside class="study-rail">
+      <section class="today-block">
+        <span class="eyebrow">今日进度</span>
+        <div class="goal-line"><strong>36</strong><span>/ 50 题</span></div>
+        <div class="progress-track"><span></span></div>
+      </section>
+
+      <dl class="metrics">
+        <div><dt>正确率</dt><dd>76%</dd></div>
+        <div><dt>待复习</dt><dd>28</dd></div>
+        <div><dt>连续天数</dt><dd>6</dd></div>
+      </dl>
+
+      <section class="rail-section">
+        <span class="eyebrow">优先补强</span>
+        <button class="weak-link"><span>力臂与力矩</span><small>38%</small></button>
+        <button class="weak-link"><span>动作平面</span><small>52%</small></button>
+        <button class="weak-link"><span>肩胛骨动作</span><small>55%</small></button>
+      </section>
+
+      <section class="rail-section unit-list">
+        <span class="eyebrow">单元</span>
+        <button class="unit active">全部单元 <small>1438</small></button>
+        <button class="unit">运动科学 <small>439</small></button>
+        <button class="unit">体适能测试 <small>81</small></button>
+        <button class="unit">训练技术与安全 <small>259</small></button>
+        <button class="unit">训练计划设计 <small>348</small></button>
+        <button class="unit">运动营养学 <small>228</small></button>
+      </section>
+    </aside>
+
+    <main>
+      <section class="screen active" id="quizScreen" data-screen="quiz">
+        <header class="context-bar">
+          <label><span>单元</span><select><option>全部单元（1438）</option><option>运动科学（439）</option></select></label>
+          <label><span>模式</span><select><option>顺序</option><option>随机</option><option>错题</option></select></label>
+        </header>
+
+        <div class="quiz-stage">
+          <article class="question-surface" aria-live="polite">
+            <header class="question-meta"><span id="questionUnit">运动科学 · 动作平面</span><span id="questionCount">18 / 50</span></header>
+            <h1 id="questionText">哑铃侧平举主要发生在哪个动作平面？</h1>
+            <div class="choices" id="choices"></div>
+            <section class="answer-result hidden" id="answerResult"></section>
+          </article>
+
+          <aside class="context-note">
+            <figure class="context-figure">
+              <img id="contextImage" src="./assets/anatomical-planes.svg" alt="解剖学三大运动平面示意图">
+            </figure>
+            <span class="eyebrow">本题图解</span>
+            <h2 id="contextTitle">先看主要动作方向</h2>
+            <ul id="contextPoints">
+              <li>屈曲、伸展：矢状面</li>
+              <li>外展、内收：额状面</li>
+              <li>旋转、水平移动：水平面</li>
+            </ul>
+          </aside>
+        </div>
+      </section>
+
+      <section class="screen content-screen" id="notesScreen" data-screen="notes">
+        <header class="page-heading"><span class="eyebrow">按考试判断顺序整理</span><h1>重点</h1><p>先理解判断规则，再记例子。</p></header>
+        <div class="topic-list">
+          <details open><summary><span>01</span><strong>运动科学</strong><small>6 个小单元</small></summary><div class="topic-body visual-topic"><div><h2>动作平面</h2><ul><li>矢状面：屈曲和伸展，例如深蹲、弯举。</li><li>额状面：外展、内收和侧屈，例如侧平举。</li><li>水平面：旋转和水平内收，例如胸飞鸟。</li></ul><button>练 5 道相关题</button></div><img src="./assets/anatomical-planes.svg" alt="三大运动平面图解"></div></details>
+          <details><summary><span>02</span><strong>体适能测试</strong><small>5 个小单元</small></summary></details>
+          <details><summary><span>03</span><strong>训练技术与安全</strong><small>7 个小单元</small></summary></details>
+          <details><summary><span>04</span><strong>训练计划设计</strong><small>6 个小单元</small></summary></details>
+        </div>
+      </section>
+
+      <section class="screen content-screen" id="weakScreen" data-screen="weak">
+        <header class="page-heading"><span class="eyebrow">根据错题自动排序</span><h1>薄弱点</h1><p>先复习最容易失分的知识点。</p></header>
+        <div class="weak-summary"><div><span>待复习</span><strong>28</strong></div><div><span>连续错</span><strong>6</strong></div><div><span>已掌握</span><strong>41</strong></div></div>
+        <div class="priority-list">
+          <article><span class="rank urgent">1</span><div><h2>力臂与力矩</h2><p>相关错题 8 · 正确率 38% · 连续错 3 次</p></div><button>开始 8 题</button></article>
+          <article><span class="rank">2</span><div><h2>动作平面</h2><p>相关错题 5 · 正确率 52% · 容易混淆</p></div><button>开始 5 题</button></article>
+          <article><span class="rank">3</span><div><h2>肩胛骨动作</h2><p>相关错题 4 · 正确率 55%</p></div><button>开始 4 题</button></article>
+        </div>
+      </section>
+
+      <section class="screen content-screen" id="searchScreen" data-screen="search">
+        <header class="page-heading"><span class="eyebrow">题目与知识点统一检索</span><h1>搜索</h1></header>
+        <label class="search-box"><span>搜索</span><input id="searchInput" type="search" placeholder="例如：力矩、侧平举、肱三头肌"></label>
+        <div class="search-empty" id="searchEmpty"><strong>快速找到不会的内容</strong><p>结果会同时显示相关知识点、题目和重点笔记。</p></div>
+        <div class="search-results hidden" id="searchResults">
+          <article><span class="result-type">知识点</span><h2>力臂与力矩</h2><p>力矩 = 力 × 垂直力臂</p></article>
+          <article><span class="result-type">相关题</span><h2>改变哑铃与肘关节的距离，力矩会怎样变化？</h2><p>运动科学 · 生物力学</p></article>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="quiz-actions" id="quizActions">
+    <button class="secondary" id="prevButton">上一题</button>
+    <button class="primary" id="nextButton">下一题</button>
+  </div>
+
+  <nav class="mobile-nav" aria-label="主要功能">
+    <button class="nav-item active" data-nav="quiz">刷题</button>
+    <button class="nav-item" data-nav="notes">重点</button>
+    <button class="nav-item" data-nav="weak">薄弱点</button>
+    <button class="nav-item" data-nav="search">搜索</button>
+  </nav>
+
+  <script src="./app.js"></script>
+</body>
+</html>
