@@ -1,9 +1,11 @@
-const CACHE_NAME = "nsca-cpt-review-v1";
+const CACHE_NAME = "nsca-cpt-review-v2";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css",
   "./app.js",
+  "./cloud-config.js",
+  "./cloud-sync.js",
   "./data.js",
   "./manifest.webmanifest",
   "./assets/icons/icon-192.png",
@@ -36,6 +38,12 @@ self.addEventListener("fetch", (event) => {
         }
         return response;
       })
-      .catch(() => caches.match(event.request).then((cached) => cached || caches.match("./index.html"))),
+      .catch(() =>
+        caches.match(event.request).then((cached) => {
+          if (cached) return cached;
+          if (event.request.mode === "navigate") return caches.match("./index.html");
+          return Response.error();
+        }),
+      ),
   );
 });
