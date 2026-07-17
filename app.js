@@ -634,21 +634,64 @@ function buildQuestionSearchPrompt(question, selectedChoice) {
   ].filter(Boolean).join("\n");
 }
 
+const DIFY_COACH_URL_KEY = "nsca-cpt:dify-coach-url";
+
+function getDifyCoachUrl() {
+  try {
+    return localStorage.getItem(DIFY_COACH_URL_KEY) || "";
+  } catch {
+    return "";
+  }
+}
+
+function configureDifyCoach() {
+  const currentUrl = getDifyCoachUrl();
+  const value = window.prompt(
+    "粘贴 Dify 已发布的 Web App 地址。留空可取消连接。",
+    currentUrl,
+  );
+  if (value === null) return;
+
+  const trimmed = value.trim();
+  if (!trimmed) {
+    localStorage.removeItem(DIFY_COACH_URL_KEY);
+  } else {
+    try {
+      const url = new URL(trimmed);
+      if (!["http:", "https:"].includes(url.protocol)) throw new Error();
+      localStorage.setItem(DIFY_COACH_URL_KEY, url.toString());
+    } catch {
+      window.alert("请输入以 http:// 或 https:// 开头的 Dify Web App 地址。");
+      return;
+    }
+  }
+
+  if (state.answeredChoice) renderAnswer(state.answeredChoice);
+}
+
 function renderAnswerSearchTools(question, selectedChoice) {
   const prompt = buildQuestionSearchPrompt(question, selectedChoice);
   const geminiWebUrl = "https://gemini.google.com/";
   const geminiAndroidIntent = `intent://gemini.google.com/#Intent;scheme=https;package=com.google.android.apps.bard;S.browser_fallback_url=${encodeURIComponent(geminiWebUrl)};end`;
+  const difyCoachUrl = getDifyCoachUrl();
+  const primaryAction = difyCoachUrl
+    ? `<a class="ai-primary-button" href="${escapeAttribute(difyCoachUrl)}" target="_blank" rel="noopener noreferrer" data-copy-prompt="${escapeAttribute(prompt)}">复制并打开 AI 教练</a>`
+    : `<a class="ai-primary-button" href="${geminiAndroidIntent}" data-copy-prompt="${escapeAttribute(prompt)}">复制并打开 Gemini</a>`;
   return `
     <section class="answer-search-panel" aria-label="用 AI 继续追问">
       <div>
         <strong>需要更详细的解释？</strong>
-        <span>提示词已包含正确答案和你的选择。</span>
+        <span>${difyCoachUrl ? "AI 教练会结合 NSCA 知识库回答。" : "提示词已包含正确答案和你的选择。"}</span>
       </div>
       <div class="answer-search-actions">
-        <a class="ai-primary-button" href="${geminiAndroidIntent}" data-copy-prompt="${escapeAttribute(prompt)}">复制并打开 Gemini</a>
+        ${primaryAction}
         <details class="ai-provider-menu">
           <summary aria-label="选择其他 AI">其他 AI</summary>
           <div>
+            ${difyCoachUrl
+              ? `<button type="button" data-configure-dify>更换 Dify 地址</button>
+                 <a href="${geminiAndroidIntent}" data-copy-prompt="${escapeAttribute(prompt)}">Gemini</a>`
+              : `<button type="button" data-configure-dify>连接 Dify AI 教练</button>`}
             <a href="https://chat.deepseek.com/" target="_blank" rel="noopener noreferrer" data-copy-prompt="${escapeAttribute(prompt)}">DeepSeek</a>
             <a href="https://www.doubao.com/chat/" target="_blank" rel="noopener noreferrer" data-copy-prompt="${escapeAttribute(prompt)}">豆包</a>
             <button type="button" data-copy-prompt="${escapeAttribute(prompt)}">仅复制提示词</button>
@@ -1568,6 +1611,12 @@ function bindEvents() {
 
     const removeButton = event.target.closest("[data-remove]");
     if (removeButton) removeWrong(removeButton.dataset.remove);
+
+    const configureDifyButton = event.target.closest("[data-configure-dify]");
+    if (configureDifyButton) {
+      configureDifyCoach();
+      return;
+    }
 
     const copyPromptButton = event.target.closest("[data-copy-prompt]");
     if (copyPromptButton) copyPromptAndOpen(copyPromptButton);
