@@ -4,6 +4,11 @@
 
 入口文件：`index.html`
 
+## 正式网址
+
+- 主站：[Vercel](https://nsca-cpt-review-app.vercel.app/)
+- 备用站：[GitHub Pages](https://donglin9320.github.io/nsca-cpt-review-app/)
+
 ## Android 安装
 
 用 Android Chrome 打开公开网址，点右上角菜单中的“安装应用”或“添加到主屏幕”。安装后可从桌面图标进入，不需要通过 Android Studio 打开。
