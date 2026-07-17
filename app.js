@@ -597,6 +597,7 @@ const els = {
   bankList: document.querySelector("#bankList"),
   materialsList: document.querySelector("#materialsList"),
   searchInput: document.querySelector("#searchInput"),
+  cloudSyncBtn: document.querySelector("#cloudSyncBtn"),
   resetProgressBtn: document.querySelector("#resetProgressBtn"),
   reviewWrongBtn: document.querySelector("#reviewWrongBtn"),
 };
@@ -827,7 +828,63 @@ function loadProgress() {
 }
 
 function saveProgress() {
+  state.progress._updatedAt = new Date().toISOString();
   localStorage.setItem(storageKey, JSON.stringify(state.progress));
+  window.NSCACloudSync?.queueSave(state.progress);
+}
+
+function updateCloudStatus({ value, message }) {
+  if (!els.cloudSyncBtn) return;
+  const labels = {
+    unconfigured: "云同步",
+    "signed-out": "云同步",
+    syncing: "同步中",
+    "email-sent": "检查邮箱",
+    synced: "已同步",
+    error: "同步失败",
+  };
+  els.cloudSyncBtn.textContent = labels[value] || "云同步";
+  els.cloudSyncBtn.dataset.status = value;
+  els.cloudSyncBtn.title = message || "跨设备同步学习进度";
+}
+
+async function handleCloudSync() {
+  const cloud = window.NSCACloudSync;
+  if (!cloud?.isConfigured()) {
+    window.alert("云同步尚未连接数据库。完成 Supabase 配置后即可在手机、平板和电脑之间同步进度。");
+    return;
+  }
+
+  if (cloud.isSignedIn()) {
+    const synced = await cloud.syncNow();
+    if (!synced) window.alert("同步失败，请检查网络后重试。");
+    return;
+  }
+
+  const email = window.prompt("输入你的邮箱。Supabase 会发送一次性登录链接：");
+  if (!email) return;
+  try {
+    await cloud.sendMagicLink(email.trim());
+    window.alert("登录链接已发送。请在这台设备上打开邮件中的链接，之后会自动同步。");
+  } catch (error) {
+    window.alert(`登录邮件发送失败：${error.message}`);
+  }
+}
+
+async function startCloudSync() {
+  const cloud = window.NSCACloudSync;
+  if (!cloud) return;
+  await cloud.init({
+    getProgress: () => state.progress,
+    setProgress: (progress) => {
+      state.progress = progress;
+      ensureProgressShape();
+      localStorage.setItem(storageKey, JSON.stringify(state.progress));
+      buildQueue();
+      renderAll();
+    },
+    onStatus: updateCloudStatus,
+  });
 }
 
 async function loadData() {
@@ -1577,6 +1634,7 @@ function bindEvents() {
   });
 
   els.searchInput.addEventListener("input", renderBank);
+  els.cloudSyncBtn?.addEventListener("click", handleCloudSync);
 
   els.resetProgressBtn.addEventListener("click", () => {
     if (!confirm("清空当前浏览器保存的做题记录和错题本？")) return;
@@ -1633,6 +1691,7 @@ async function init() {
   buildQueue();
   bindEvents();
   renderAll();
+  await startCloudSync();
 }
 
 init().catch((error) => {
@@ -1645,3 +1704,9 @@ init().catch((error) => {
     </main>
   `;
 });
+
+if ("serviceWorker" in navigator && window.isSecureContext) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js").catch(() => {});
+  });
+}

@@ -1608,7 +1608,6 @@ summary:focus-visible {
 }
 
 .header-action {
-  justify-self: end;
   min-height: 36px;
   padding: 0 12px;
   border: 0;
@@ -1618,6 +1617,21 @@ summary:focus-visible {
 }
 
 .header-action:hover {
+  color: var(--warn);
+}
+
+.header-actions {
+  display: flex;
+  justify-self: end;
+  align-items: center;
+  gap: 2px;
+}
+
+.cloud-sync-button[data-status="synced"] {
+  color: var(--accent);
+}
+
+.cloud-sync-button[data-status="error"] {
   color: var(--warn);
 }
 
@@ -2046,6 +2060,16 @@ input[type="search"] {
   .desktop-tabs,
   .header-action,
   .sidebar { display: none; }
+  .header-actions {
+    display: flex;
+    margin-left: auto;
+  }
+  .cloud-sync-button {
+    display: inline-flex;
+    align-items: center;
+    min-height: 34px;
+    padding: 0 8px;
+  }
   .app-shell { display: block; min-height: auto; }
   .main-panel { min-height: calc(100vh - 52px); }
   .topbar {

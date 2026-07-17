@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">NSCA-CPT 复习</title>
+  <rect width="512" height="512" rx="96" fill="#14513d"/>
+  <g fill="#ffffff">
+    <rect x="112" y="180" width="32" height="152" rx="12"/>
+    <rect x="156" y="204" width="28" height="104" rx="10"/>
+    <rect x="184" y="244" width="144" height="24" rx="12"/>
+    <rect x="328" y="204" width="28" height="104" rx="10"/>
+    <rect x="368" y="180" width="32" height="152" rx="12"/>
+  </g>
+  <text x="256" y="405" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="68" font-weight="700" text-anchor="middle">CPT</text>
+</svg>
