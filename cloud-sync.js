@@ -159,6 +159,14 @@
     }
   }
 
+  async function getAccessToken() {
+    const currentSession = await validSession();
+    if (!currentSession) return "";
+    if (!user && !(await loadUser())) return "";
+    const refreshedSession = await validSession();
+    return refreshedSession?.access_token || "";
+  }
+
   async function sendMagicLink(email) {
     if (!isConfigured()) throw new Error("尚未连接 Supabase");
     status("syncing", "正在发送登录邮件");
@@ -204,6 +212,7 @@
     sendMagicLink,
     syncNow,
     queueSave,
+    getAccessToken,
     isSignedIn: () => Boolean(user),
   };
 })();

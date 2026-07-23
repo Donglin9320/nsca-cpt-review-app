@@ -1921,12 +1921,46 @@ input[type="search"] {
   align-items: center;
   justify-content: center;
   padding: 0 15px;
+  border: 0;
   border-radius: 8px;
   background: var(--accent);
   color: #fff;
+  cursor: pointer;
   font-size: 13px;
   font-weight: 650;
   text-decoration: none;
+}
+
+.ai-primary-button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.ai-inline-answer {
+  grid-column: 1 / -1;
+  margin-top: 2px;
+  padding: 12px;
+  border: 1px solid #cbd8cf;
+  border-radius: 8px;
+  background: #f7faf8;
+}
+
+.ai-inline-answer > strong {
+  margin-bottom: 5px;
+  color: var(--accent-strong);
+  font-size: 13px;
+}
+
+.ai-inline-answer [data-kimi-content] {
+  color: #2d3a30;
+  font-size: 14px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+.ai-inline-answer.error {
+  border-color: #e7b8b3;
+  background: #fff6f5;
 }
 
 .ai-provider-menu { position: relative; }

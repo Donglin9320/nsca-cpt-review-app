@@ -676,34 +676,80 @@ function renderAnswerSearchTools(question, selectedChoice) {
   const geminiWebUrl = "https://gemini.google.com/";
   const geminiAndroidIntent = `intent://gemini.google.com/#Intent;scheme=https;package=com.google.android.apps.bard;S.browser_fallback_url=${encodeURIComponent(geminiWebUrl)};end`;
   const difyCoachUrl = getDifyCoachUrl();
-  const primaryAction = difyCoachUrl
-    ? `<a class="ai-primary-button" href="${escapeAttribute(difyCoachUrl)}" target="_blank" rel="noopener noreferrer" data-copy-prompt="${escapeAttribute(prompt)}">复制并打开 AI 教练</a>`
-    : `<a class="ai-primary-button" href="${kimiWebUrl}" target="_blank" rel="noopener noreferrer" data-copy-prompt="${escapeAttribute(prompt)}">复制并打开 Kimi K3</a>`;
   return `
     <section class="answer-search-panel" aria-label="用 AI 继续追问">
       <div>
         <strong>需要更详细的解释？</strong>
-        <span>${difyCoachUrl ? "AI 教练会结合 NSCA 知识库回答。" : "提示词已包含正确答案和你的选择。"}</span>
+        <span>直接查看针对本题和你所选答案的解释。</span>
       </div>
       <div class="answer-search-actions">
-        ${primaryAction}
+        <button class="ai-primary-button" type="button" data-ask-kimi="${escapeAttribute(prompt)}">直接问 Kimi K2.5</button>
         <details class="ai-provider-menu">
           <summary aria-label="选择其他 AI">其他 AI</summary>
           <div>
             ${difyCoachUrl
-              ? `<button type="button" data-configure-dify>更换 Dify 地址</button>
-                 <a href="${kimiWebUrl}" target="_blank" rel="noopener noreferrer" data-copy-prompt="${escapeAttribute(prompt)}">Kimi K3</a>
+              ? `<a href="${escapeAttribute(difyCoachUrl)}" target="_blank" rel="noopener noreferrer" data-copy-prompt="${escapeAttribute(prompt)}">AI 教练</a>
+                 <button type="button" data-configure-dify>更换 Dify 地址</button>
                  <a href="${geminiAndroidIntent}" data-copy-prompt="${escapeAttribute(prompt)}">Gemini</a>`
               : `<button type="button" data-configure-dify>连接 Dify AI 教练</button>
                  <a href="${geminiAndroidIntent}" data-copy-prompt="${escapeAttribute(prompt)}">Gemini</a>`}
+            <a href="${kimiWebUrl}" target="_blank" rel="noopener noreferrer" data-copy-prompt="${escapeAttribute(prompt)}">复制并打开 Kimi</a>
             <a href="https://chat.deepseek.com/" target="_blank" rel="noopener noreferrer" data-copy-prompt="${escapeAttribute(prompt)}">DeepSeek</a>
             <a href="https://www.doubao.com/chat/" target="_blank" rel="noopener noreferrer" data-copy-prompt="${escapeAttribute(prompt)}">豆包</a>
             <button type="button" data-copy-prompt="${escapeAttribute(prompt)}">仅复制提示词</button>
           </div>
         </details>
       </div>
+      <div class="ai-inline-answer hidden" data-kimi-answer aria-live="polite">
+        <strong>Kimi K2.5</strong>
+        <div data-kimi-content></div>
+      </div>
     </section>
   `;
+}
+
+async function askKimiDirectly(button) {
+  const panel = button.closest(".answer-search-panel");
+  const answerBox = panel?.querySelector("[data-kimi-answer]");
+  const content = panel?.querySelector("[data-kimi-content]");
+  if (!answerBox || !content) return;
+
+  const cloud = window.NSCACloudSync;
+  const accessToken = await cloud?.getAccessToken?.();
+  answerBox.classList.remove("error");
+  answerBox.classList.remove("hidden");
+
+  if (!accessToken) {
+    content.textContent = "请先点击页面顶部的“邮箱登录”，登录后再试。";
+    answerBox.classList.add("error");
+    return;
+  }
+
+  const originalLabel = button.textContent;
+  button.disabled = true;
+  button.textContent = "正在解释…";
+  content.textContent = "正在结合题目和你的答案生成解释。";
+
+  try {
+    const response = await fetch("/api/kimi", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ prompt: button.dataset.askKimi || "" }),
+    });
+    const body = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(body.error || `请求失败 (${response.status})`);
+    content.textContent = body.answer;
+    button.textContent = "重新询问";
+  } catch (error) {
+    answerBox.classList.add("error");
+    content.textContent = error.message || "暂时无法连接 Kimi，请稍后再试。";
+    button.textContent = originalLabel;
+  } finally {
+    button.disabled = false;
+  }
 }
 
 async function copyPromptAndOpen(button) {
@@ -839,14 +885,14 @@ function saveProgress() {
 function updateCloudStatus({ value, message }) {
   if (!els.cloudSyncBtn) return;
   const labels = {
-    unconfigured: "云同步",
-    "signed-out": "云同步",
+    unconfigured: "邮箱登录",
+    "signed-out": "邮箱登录",
     syncing: "同步中",
     "email-sent": "检查邮箱",
-    synced: "已同步",
+    synced: "已登录",
     error: "同步失败",
   };
-  els.cloudSyncBtn.textContent = labels[value] || "云同步";
+  els.cloudSyncBtn.textContent = labels[value] || "邮箱登录";
   els.cloudSyncBtn.dataset.status = value;
   els.cloudSyncBtn.title = message || "跨设备同步学习进度";
 }
@@ -864,11 +910,11 @@ async function handleCloudSync() {
     return;
   }
 
-  const email = window.prompt("输入你的邮箱。Supabase 会发送一次性登录链接：");
+  const email = window.prompt("输入你的邮箱。登录后会同步错题、等级和学习进度：");
   if (!email) return;
   try {
     await cloud.sendMagicLink(email.trim());
-    window.alert("登录链接已发送。请在这台设备上打开邮件中的链接，之后会自动同步。");
+    window.alert("登录链接已发送。请在这台设备上打开邮件中的链接，返回 App 后会自动恢复进度。");
   } catch (error) {
     window.alert(`登录邮件发送失败：${error.message}`);
   }
@@ -1676,6 +1722,12 @@ function bindEvents() {
     const configureDifyButton = event.target.closest("[data-configure-dify]");
     if (configureDifyButton) {
       configureDifyCoach();
+      return;
+    }
+
+    const askKimiButton = event.target.closest("[data-ask-kimi]");
+    if (askKimiButton) {
+      askKimiDirectly(askKimiButton);
       return;
     }
 
