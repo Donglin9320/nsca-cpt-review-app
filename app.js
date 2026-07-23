@@ -672,12 +672,13 @@ function configureDifyCoach() {
 
 function renderAnswerSearchTools(question, selectedChoice) {
   const prompt = buildQuestionSearchPrompt(question, selectedChoice);
+  const kimiWebUrl = "https://www.kimi.com/?chat_enter_method=new_chat";
   const geminiWebUrl = "https://gemini.google.com/";
   const geminiAndroidIntent = `intent://gemini.google.com/#Intent;scheme=https;package=com.google.android.apps.bard;S.browser_fallback_url=${encodeURIComponent(geminiWebUrl)};end`;
   const difyCoachUrl = getDifyCoachUrl();
   const primaryAction = difyCoachUrl
     ? `<a class="ai-primary-button" href="${escapeAttribute(difyCoachUrl)}" target="_blank" rel="noopener noreferrer" data-copy-prompt="${escapeAttribute(prompt)}">复制并打开 AI 教练</a>`
-    : `<a class="ai-primary-button" href="${geminiAndroidIntent}" data-copy-prompt="${escapeAttribute(prompt)}">复制并打开 Gemini</a>`;
+    : `<a class="ai-primary-button" href="${kimiWebUrl}" target="_blank" rel="noopener noreferrer" data-copy-prompt="${escapeAttribute(prompt)}">复制并打开 Kimi K3</a>`;
   return `
     <section class="answer-search-panel" aria-label="用 AI 继续追问">
       <div>
@@ -691,8 +692,10 @@ function renderAnswerSearchTools(question, selectedChoice) {
           <div>
             ${difyCoachUrl
               ? `<button type="button" data-configure-dify>更换 Dify 地址</button>
+                 <a href="${kimiWebUrl}" target="_blank" rel="noopener noreferrer" data-copy-prompt="${escapeAttribute(prompt)}">Kimi K3</a>
                  <a href="${geminiAndroidIntent}" data-copy-prompt="${escapeAttribute(prompt)}">Gemini</a>`
-              : `<button type="button" data-configure-dify>连接 Dify AI 教练</button>`}
+              : `<button type="button" data-configure-dify>连接 Dify AI 教练</button>
+                 <a href="${geminiAndroidIntent}" data-copy-prompt="${escapeAttribute(prompt)}">Gemini</a>`}
             <a href="https://chat.deepseek.com/" target="_blank" rel="noopener noreferrer" data-copy-prompt="${escapeAttribute(prompt)}">DeepSeek</a>
             <a href="https://www.doubao.com/chat/" target="_blank" rel="noopener noreferrer" data-copy-prompt="${escapeAttribute(prompt)}">豆包</a>
             <button type="button" data-copy-prompt="${escapeAttribute(prompt)}">仅复制提示词</button>
@@ -709,7 +712,7 @@ async function copyPromptAndOpen(button) {
     await navigator.clipboard.writeText(promptText);
     if (button.tagName === "BUTTON") button.textContent = "已复制";
   } catch (error) {
-    window.prompt("复制下面这段内容到 Gemini：", promptText);
+    window.prompt("复制下面这段内容到 AI：", promptText);
   }
 }
 
