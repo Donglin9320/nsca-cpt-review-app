@@ -1,4 +1,4 @@
-const CACHE_NAME = "nsca-cpt-review-v6";
+const CACHE_NAME = "nsca-cpt-review-v7";
 const APP_SHELL = [
   "./",
   "./index.html",
