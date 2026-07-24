@@ -109,12 +109,19 @@ module.exports = async function handler(request, response) {
 
     const result = await kimiResponse.json().catch(() => ({}));
     if (!kimiResponse.ok) {
-      const upstreamMessage = result?.error?.message || "";
+      const upstreamMessage =
+        result?.error?.message || result?.detail || result?.message || result?.title || "";
       const isQuotaError = kimiResponse.status === 402 || kimiResponse.status === 429;
+      const accessError =
+        kimiResponse.status === 401
+          ? "NVIDIA API Key 无效，请重新生成并在 Vercel 更新。"
+          : "NVIDIA 账号尚无此模型权限，或未完成试用授权。";
       sendJson(response, isQuotaError ? 429 : 502, {
         error: isQuotaError
           ? "NVIDIA 免费接口请求过于频繁，请稍后再试。"
-          : `Kimi 暂时无法回答${upstreamMessage ? `：${upstreamMessage}` : "。"}`,
+          : kimiResponse.status === 401 || kimiResponse.status === 403
+            ? accessError
+            : `NVIDIA 请求失败（${kimiResponse.status}）${upstreamMessage ? `：${upstreamMessage}` : "。"}`,
       });
       return;
     }
