@@ -683,7 +683,7 @@ function renderAnswerSearchTools(question, selectedChoice) {
         <span>直接查看针对本题和你所选答案的解释。</span>
       </div>
       <div class="answer-search-actions">
-        <button class="ai-primary-button" type="button" data-ask-kimi="${escapeAttribute(prompt)}">直接问 Kimi K2.5</button>
+        <button class="ai-primary-button" type="button" data-ask-kimi="${escapeAttribute(prompt)}">直接问 Kimi K2.6</button>
         <details class="ai-provider-menu">
           <summary aria-label="选择其他 AI">其他 AI</summary>
           <div>
@@ -701,7 +701,7 @@ function renderAnswerSearchTools(question, selectedChoice) {
         </details>
       </div>
       <div class="ai-inline-answer hidden" data-kimi-answer aria-live="polite">
-        <strong>Kimi K2.5</strong>
+        <strong>Kimi K2.6</strong>
         <div data-kimi-content></div>
       </div>
     </section>

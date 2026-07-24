@@ -1,5 +1,5 @@
 const MAX_PROMPT_LENGTH = 8000;
-const MOONSHOT_URL = "https://api.moonshot.cn/v1/chat/completions";
+const NVIDIA_URL = "https://integrate.api.nvidia.com/v1/chat/completions";
 
 function sendJson(response, status, body) {
   response.status(status).setHeader("Content-Type", "application/json; charset=utf-8");
@@ -45,8 +45,8 @@ module.exports = async function handler(request, response) {
 
   const supabaseUrl = process.env.SUPABASE_URL;
   const supabaseKey = process.env.SUPABASE_PUBLISHABLE_KEY;
-  const moonshotKey = process.env.MOONSHOT_API_KEY;
-  if (!supabaseUrl || !supabaseKey || !moonshotKey) {
+  const nvidiaKey = process.env.NVIDIA_API_KEY;
+  if (!supabaseUrl || !supabaseKey || !nvidiaKey) {
     sendJson(response, 503, { error: "Kimi 服务尚未完成配置。" });
     return;
   }
@@ -77,16 +77,20 @@ module.exports = async function handler(request, response) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 55_000);
   try {
-    const kimiResponse = await fetch(MOONSHOT_URL, {
+    const kimiResponse = await fetch(NVIDIA_URL, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${moonshotKey}`,
+        Authorization: `Bearer ${nvidiaKey}`,
+        Accept: "application/json",
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "kimi-k2.5",
-        thinking: { type: "disabled" },
+        model: "moonshotai/kimi-k2.6",
         max_tokens: 800,
+        seed: 0,
+        stream: false,
+        temperature: 1,
+        top_p: 1,
         messages: [
           {
             role: "system",
@@ -109,7 +113,7 @@ module.exports = async function handler(request, response) {
       const isQuotaError = kimiResponse.status === 402 || kimiResponse.status === 429;
       sendJson(response, isQuotaError ? 429 : 502, {
         error: isQuotaError
-          ? "Kimi API 额度不足或请求过于频繁。"
+          ? "NVIDIA 免费接口请求过于频繁，请稍后再试。"
           : `Kimi 暂时无法回答${upstreamMessage ? `：${upstreamMessage}` : "。"}`,
       });
       return;
