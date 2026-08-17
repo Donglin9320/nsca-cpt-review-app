@@ -1,28 +1,76 @@
-# NSCA-CPT 复习 App
+# NSCA-CPT Review App
 
-个人刷题用网页。支持安装到 Android 主屏幕、离线打开、本地保存进度，以及可选的 Supabase 跨设备同步。
+A personal NSCA-CPT study web app for daily quiz practice, wrong-answer review, progress tracking, and direct GLM-5.2 explanations.
 
-入口文件：`index.html`
+## Live App
 
-## 正式网址
+- Production: https://nsca-cpt-review-app.vercel.app/
+- GitHub Pages fallback: https://donglin9320.github.io/nsca-cpt-review-app/
 
-- 主站：[Vercel](https://nsca-cpt-review-app.vercel.app/)
-- 备用站：[GitHub Pages](https://donglin9320.github.io/nsca-cpt-review-app/)
+The Vercel production app is the source of truth because it includes the `/api/kimi` serverless route used for direct GLM-5.2 explanations.
 
-## Android 安装
+## Features
 
-用 Android Chrome 打开公开网址，点右上角菜单中的“安装应用”或“添加到主屏幕”。安装后可从桌面图标进入，不需要通过 Android Studio 打开。
+- 1,438 practice questions across 7 NSCA-CPT units.
+- Multiple-choice quiz interface with explanations for every answer option.
+- Automatic wrong-answer notebook for missed questions.
+- Daily goal tracking set to 150 questions.
+- XP, streak, combo, milestone, and instant feedback interactions.
+- Anatomy and movement-plane visual aids when available in the app data.
+- Supabase email login and cross-device progress sync.
+- Direct GLM-5.2 explanation flow through the Vercel API route.
 
-## Supabase 数据库
+## Architecture
 
-1. 创建 Supabase 项目。
-2. 在 SQL Editor 运行 `supabase/migrations/001_study_progress.sql`。
-3. 在 Authentication 的 URL Configuration 中，把正式网址设为 Site URL，并加入 Redirect URLs。
-4. 从 Project Settings 的 API 页面取得 Project URL 和 anon public key。
-5. 把两个公开值填入 `cloud-config.js`。不要把 `service_role` key 写入前端。
+- Frontend: static `index.html`, `styles.css`, and `app.js`.
+- Data bundle: `data.js`.
+- Cloud sync: `cloud-config.js`, `cloud-sync.js`, and Supabase Row Level Security.
+- AI API: `api/kimi.js` deployed as a Vercel serverless function.
+- Deployment config: `vercel.json`.
 
-数据库启用了 Row Level Security。登录用户只能读写自己的进度。
+The direct GLM button works on the Vercel domain because the browser can call `/api/kimi` on the same origin. A local `file://` copy cannot run that API route.
 
-## Vercel
+## Required Vercel Environment Variables
 
-仓库可直接导入 Vercel，不需要 Build Command，Output Directory 留空。`vercel.json` 已设置 Service Worker 的更新缓存策略。
+Set these values in the Vercel project settings:
+
+- `SUPABASE_URL`
+- `SUPABASE_PUBLISHABLE_KEY`
+- `NVIDIA_API_KEY`
+
+Do not expose any Supabase `service_role` key in frontend code.
+
+## Supabase Setup
+
+1. Create a Supabase project.
+2. Run `supabase/migrations/001_study_progress.sql` in the Supabase SQL Editor.
+3. In Authentication URL Configuration, set the production URL as the Site URL.
+4. Add the production URL to Redirect URLs.
+5. Copy the Project URL and publishable key into `cloud-config.js`.
+
+Row Level Security is enabled so logged-in users can only read and write their own progress.
+
+## Vercel Deployment
+
+Import this repository into Vercel.
+
+- Build Command: leave empty.
+- Output Directory: leave empty.
+- Root entry: `index.html`.
+- `vercel.json` configures the `/api/kimi` function and service worker cache headers.
+
+After deployment, verify the GLM flow:
+
+1. Open the production URL.
+2. Log in with email.
+3. Answer a question.
+4. Click `直接问 GLM-5.2`.
+5. Confirm the response is returned through `/api/kimi`.
+
+## Android Installation
+
+Open the production URL in Android Chrome, then choose **Install app** or **Add to Home screen** from the browser menu.
+
+## Local Notes
+
+Use the production Vercel URL for the final app experience. Local static copies are useful for reading or packaging files, but they cannot directly run the Vercel API route unless served through the deployed project or an equivalent local serverless setup.
