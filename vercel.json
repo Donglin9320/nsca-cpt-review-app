@@ -1,6 +1,9 @@
 {
   "cleanUrls": true,
   "functions": {
+    "api/study-notifications.js": {
+      "maxDuration": 60
+    },
     "api/kimi.js": {
       "maxDuration": 60
     }

@@ -1,4 +1,6 @@
-const storageKey = "nsca-cpt-review-state-v1";
+const guestStorageKey = "nsca-cpt-review-state-v1";
+let storageKey = guestStorageKey;
+let activeUserId = null;
 const dailyGoalQuestions = 150;
 const levelXp = 120;
 const questionMilestones = [
@@ -683,7 +685,7 @@ function renderAnswerSearchTools(question, selectedChoice) {
         <span>直接查看针对本题和你所选答案的解释。</span>
       </div>
       <div class="answer-search-actions">
-        <button class="ai-primary-button" type="button" data-ask-kimi="${escapeAttribute(prompt)}">直接问 GLM-5.2</button>
+        <button class="ai-primary-button" type="button" data-ask-kimi="${escapeAttribute(prompt)}">询问 AI 助教</button>
         <details class="ai-provider-menu">
           <summary aria-label="选择其他 AI">其他 AI</summary>
           <div>
@@ -701,7 +703,7 @@ function renderAnswerSearchTools(question, selectedChoice) {
         </details>
       </div>
       <div class="ai-inline-answer hidden" data-kimi-answer aria-live="polite">
-        <strong>GLM-5.2</strong>
+        <strong data-ai-model>AI 助教</strong>
         <div data-kimi-content></div>
       </div>
     </section>
@@ -715,12 +717,19 @@ async function askKimiDirectly(button) {
   if (!answerBox || !content) return;
 
   const cloud = window.NSCACloudSync;
-  const accessToken = await cloud?.getAccessToken?.();
+  let accessToken;
   answerBox.classList.remove("error");
   answerBox.classList.remove("hidden");
+  try {
+    accessToken = await cloud?.getAccessToken?.();
+  } catch {
+    content.textContent = "暂时无法连接登录服务，请稍后重试。你的本地答题进度仍然保留。";
+    answerBox.classList.add("error");
+    return;
+  }
 
   if (!accessToken) {
-    content.textContent = "请先点击页面顶部的“邮箱登录”，登录后再试。";
+    content.textContent = "请先点击页面顶部的“使用 Google 登录”，登录后再试。";
     answerBox.classList.add("error");
     return;
   }
@@ -742,10 +751,11 @@ async function askKimiDirectly(button) {
     const body = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(body.error || `请求失败 (${response.status})`);
     content.textContent = body.answer;
+    answerBox.querySelector("[data-ai-model]").textContent = body.model || "AI 助教";
     button.textContent = "重新询问";
   } catch (error) {
     answerBox.classList.add("error");
-    content.textContent = error.message || "暂时无法连接 Kimi，请稍后再试。";
+    content.textContent = error.message || "暂时无法连接 AI 服务，请稍后再试。";
     button.textContent = originalLabel;
   } finally {
     button.disabled = false;
@@ -833,10 +843,11 @@ function closeImageZoom() {
 }
 
 function todayKey() {
-  const now = new Date();
-  const month = String(now.getMonth() + 1).padStart(2, "0");
-  const day = String(now.getDate()).padStart(2, "0");
-  return `${now.getFullYear()}-${month}-${day}`;
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Vancouver", year: "numeric", month: "2-digit", day: "2-digit",
+  }).formatToParts(new Date());
+  const part = (type) => parts.find((item) => item.type === type).value;
+  return `${part("year")}-${part("month")}-${part("day")}`;
 }
 
 function previousDateKey(dateKey) {
@@ -865,6 +876,7 @@ function ensureProgressShape() {
 }
 
 function loadProgress() {
+  state.progress = { attempts: {}, wrong: {}, game: {} };
   try {
     const raw = localStorage.getItem(storageKey);
     if (raw) {
@@ -877,24 +889,27 @@ function loadProgress() {
 }
 
 function saveProgress() {
+  state.progress.quizSession = window.NSCAQuizSession.capture(state);
+  state.progress._ownerId = activeUserId;
   state.progress._updatedAt = new Date().toISOString();
   localStorage.setItem(storageKey, JSON.stringify(state.progress));
   window.NSCACloudSync?.queueSave(state.progress);
 }
 
-function updateCloudStatus({ value, message }) {
+function updateCloudStatus({ value, message, signedIn }) {
+  document.querySelector("#signOutBtn").hidden = !signedIn;
   if (!els.cloudSyncBtn) return;
   const labels = {
-    unconfigured: "邮箱登录",
-    "signed-out": "邮箱登录",
+    unconfigured: "使用 Google 登录",
+    "signed-out": "使用 Google 登录",
     syncing: "同步中",
-    "email-sent": "检查邮箱",
     synced: "已登录",
     error: "同步失败",
   };
-  els.cloudSyncBtn.textContent = labels[value] || "邮箱登录";
+  els.cloudSyncBtn.textContent = labels[value] || "使用 Google 登录";
   els.cloudSyncBtn.dataset.status = value;
   els.cloudSyncBtn.title = message || "跨设备同步学习进度";
+  els.cloudSyncBtn.dataset.message = message || "";
 }
 
 async function handleCloudSync() {
@@ -906,17 +921,14 @@ async function handleCloudSync() {
 
   if (cloud.isSignedIn()) {
     const synced = await cloud.syncNow();
-    if (!synced) window.alert("同步失败，请检查网络后重试。");
+    if (!synced) window.alert(`同步失败：${els.cloudSyncBtn.dataset.message || "请检查网络后重试"}`);
     return;
   }
 
-  const email = window.prompt("输入你的邮箱。登录后会同步错题、等级和学习进度：");
-  if (!email) return;
   try {
-    await cloud.sendMagicLink(email.trim());
-    window.alert("登录链接已发送。请在这台设备上打开邮件中的链接，返回 App 后会自动恢复进度。");
+    cloud.signInWithGoogle();
   } catch (error) {
-    window.alert(`登录邮件发送失败：${error.message}`);
+    window.alert(`Google 登录失败：${error.message}`);
   }
 }
 
@@ -924,12 +936,22 @@ async function startCloudSync() {
   const cloud = window.NSCACloudSync;
   if (!cloud) return;
   await cloud.init({
+    onUser: (user) => {
+      const id = user?.id || null;
+      if (id === activeUserId) return;
+      activeUserId = id;
+      storageKey = id ? `${guestStorageKey}:${id}` : guestStorageKey;
+      loadProgress();
+      state.progress._ownerId = id;
+      restoreQuizSession();
+      renderAll();
+    },
     getProgress: () => state.progress,
     setProgress: (progress) => {
       state.progress = progress;
       ensureProgressShape();
       localStorage.setItem(storageKey, JSON.stringify(state.progress));
-      buildQueue();
+      restoreQuizSession();
       renderAll();
     },
     onStatus: updateCloudStatus,
@@ -999,7 +1021,18 @@ function shuffle(items) {
   return copy;
 }
 
-function buildQueue(keepQuestionId = null) {
+function restoreQuizSession() {
+  const restored = window.NSCAQuizSession.restore(state.progress.quizSession, state.questions, state.progress.wrong);
+  if (restored) Object.assign(state, restored);
+  else {
+    state.activeUnit = "all";
+    state.mode = "sequential";
+    buildQueue(null, false);
+  }
+  els.modeSelect.value = state.mode;
+}
+
+function buildQueue(keepQuestionId = null, persist = true) {
   let base = questionsForUnit(state.activeUnit);
 
   if (state.mode === "curated") {
@@ -1018,6 +1051,7 @@ function buildQueue(keepQuestionId = null) {
     state.index = nextIndex >= 0 ? nextIndex : 0;
   }
   state.answeredChoice = null;
+  if (persist) saveProgress();
 }
 
 function currentQuestion() {
@@ -1200,9 +1234,11 @@ function renderQuestion() {
   });
 
   renderFocusPanel();
+  if (state.answeredChoice) renderAnswer(state.answeredChoice);
 }
 
 function answerQuestion(choice) {
+  if (state.answeredChoice) return;
   const question = currentQuestion();
   if (!question) return;
   const correct = choice === question.answer;
@@ -1670,6 +1706,7 @@ function bindEvents() {
     if (state.index > 0) {
       state.index -= 1;
       state.answeredChoice = null;
+      saveProgress();
       renderQuestion();
     }
   });
@@ -1678,17 +1715,18 @@ function bindEvents() {
     if (state.index < state.queue.length - 1) {
       state.index += 1;
       state.answeredChoice = null;
+      saveProgress();
       renderQuestion();
     }
   });
 
   els.searchInput.addEventListener("input", renderBank);
   els.cloudSyncBtn?.addEventListener("click", handleCloudSync);
+  document.querySelector("#signOutBtn").addEventListener("click", () => window.NSCACloudSync.signOut());
 
   els.resetProgressBtn.addEventListener("click", () => {
-    if (!confirm("清空当前浏览器保存的做题记录和错题本？")) return;
+    if (!confirm("清空当前账号的做题记录和错题本？此操作也会同步到云端。")) return;
     state.progress = { attempts: {}, wrong: {} };
-    saveProgress();
     buildQueue();
     renderAll();
   });
@@ -1743,7 +1781,7 @@ function bindEvents() {
 async function init() {
   loadProgress();
   await loadData();
-  buildQueue();
+  restoreQuizSession();
   bindEvents();
   renderAll();
   await startCloudSync();

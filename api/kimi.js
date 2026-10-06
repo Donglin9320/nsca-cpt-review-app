@@ -1,6 +1,6 @@
 const MAX_PROMPT_LENGTH = 8000;
 const NVIDIA_URL = "https://integrate.api.nvidia.com/v1/chat/completions";
-const NVIDIA_MODEL = "z-ai/glm-5.2";
+const DEFAULT_MODEL = "moonshotai/kimi-k3";
 
 function sendJson(response, status, body) {
   response.status(status).setHeader("Content-Type", "application/json; charset=utf-8");
@@ -47,6 +47,7 @@ module.exports = async function handler(request, response) {
   const supabaseUrl = process.env.SUPABASE_URL;
   const supabaseKey = process.env.SUPABASE_PUBLISHABLE_KEY;
   const nvidiaKey = process.env.NVIDIA_API_KEY;
+  const model = process.env.NVIDIA_MODEL?.trim() || DEFAULT_MODEL;
   if (!supabaseUrl || !supabaseKey || !nvidiaKey) {
     sendJson(response, 503, { error: "AI 服务尚未完成配置。" });
     return;
@@ -59,8 +60,13 @@ module.exports = async function handler(request, response) {
         apikey: supabaseKey,
         Authorization: `Bearer ${accessToken}`,
       },
+      signal: AbortSignal.timeout(8_000),
     });
     if (!userResponse.ok) {
+      if (userResponse.status !== 401 && userResponse.status !== 403) {
+        sendJson(response, 503, { error: "Supabase 登录服务暂时不可用，请稍后再试。" });
+        return;
+      }
       sendJson(response, 401, { error: "登录已失效，请重新登录云同步。" });
       return;
     }
@@ -76,7 +82,7 @@ module.exports = async function handler(request, response) {
   }
 
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 55_000);
+  const timeout = setTimeout(() => controller.abort(), 45_000);
   try {
     const aiResponse = await fetch(NVIDIA_URL, {
       method: "POST",
@@ -86,8 +92,9 @@ module.exports = async function handler(request, response) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: NVIDIA_MODEL,
-        max_tokens: 800,
+        model,
+        max_tokens: 4096,
+        ...(model === "moonshotai/kimi-k3" ? { reasoning_effort: "low" } : {}),
         seed: 0,
         stream: false,
         temperature: 1,
@@ -97,9 +104,10 @@ module.exports = async function handler(request, response) {
             role: "system",
             content: [
               "你是 NSCA-CPT 中文复习助手。",
-              "只回答用户提供的题目，先解释正确答案，再解释用户误选项为什么不对。",
+              "只回答用户提供的题目，先核对题库答案是否合理，再逐项解释选项的概念或作用及其与题干的关系。不要仅说不符合考点。",
+              "没有提供教材原文时，不要声称查阅了教材或编造研究和页码；遇到歧义或证据不足应说明。",
               "使用自然、直接的中文，避免英文直译和无关延伸。",
-              "回答尽量控制在 250 个汉字内；确有必要时可以稍长。",
+              "回答尽量控制在 500 个汉字内；确有必要时可以稍长。",
             ].join(""),
           },
           { role: "user", content: prompt },
@@ -110,6 +118,10 @@ module.exports = async function handler(request, response) {
 
     const result = await aiResponse.json().catch(() => ({}));
     if (!aiResponse.ok) {
+      if (aiResponse.status === 410 || aiResponse.status === 404) {
+        sendJson(response, 503, { error: `当前模型 ${model} 已下线或不可用，请更新 Vercel 的 NVIDIA_MODEL 配置并重新部署。` });
+        return;
+      }
       const upstreamMessage =
         result?.error?.message || result?.detail || result?.message || result?.title || "";
       const isQuotaError = aiResponse.status === 402 || aiResponse.status === 429;
@@ -129,14 +141,14 @@ module.exports = async function handler(request, response) {
 
     const answer = answerText(result?.choices?.[0]?.message?.content);
     if (!answer) {
-      sendJson(response, 502, { error: "GLM-5.2 没有返回可显示的回答。" });
+      sendJson(response, 502, { error: "AI 未返回完整的可显示回答，请稍后重试。" });
       return;
     }
-    sendJson(response, 200, { answer });
+    sendJson(response, 200, { answer, model });
   } catch (error) {
     sendJson(response, 504, {
       error:
-        error?.name === "AbortError" ? "GLM-5.2 响应超时，请稍后再试。" : "暂时无法连接 GLM-5.2。",
+        error?.name === "AbortError" ? "AI 响应超时，请稍后再试。" : "暂时无法连接 AI 服务。",
     });
   } finally {
     clearTimeout(timeout);
