@@ -14,6 +14,7 @@ test('NVIDIA request uses Kimi K3, returns final answer and handles retired mode
         const body = JSON.parse(options.body);
         assert.equal(body.model, 'moonshotai/kimi-k3');
         assert.equal(body.reasoning_effort, 'low');
+        assert.equal(body.top_p, 0.95);
         return { ok: upstreamStatus === 200, status: upstreamStatus, json: async () => ({ choices: [{ message: { content: 'Final answer', reasoning_content: 'Not displayed' } }] }) };
       };
       const response = { setHeader() {}, status(code) { this.code = code; return this; }, end(body) { this.body = JSON.parse(body); } };

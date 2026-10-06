@@ -98,7 +98,7 @@ module.exports = async function handler(request, response) {
         seed: 0,
         stream: false,
         temperature: 1,
-        top_p: 1,
+        top_p: model === "moonshotai/kimi-k3" ? 0.95 : 1,
         messages: [
           {
             role: "system",
