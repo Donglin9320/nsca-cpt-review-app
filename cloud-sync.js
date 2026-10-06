@@ -10,10 +10,15 @@
   let onUser = () => {};
   let boundUserId = null;
   let readyToSave = false;
+  let refreshPromise = null;
+  let writeTail = Promise.resolve();
+  let pendingProgress = null;
+  let saveVersion = 0;
 
   function bindUser(nextUser) {
     if (boundUserId === (nextUser?.id || null)) return;
     clearTimeout(saveTimer);
+    pendingProgress = null;
     readyToSave = false;
     boundUserId = nextUser?.id || null;
     onUser(nextUser);
@@ -33,6 +38,7 @@
 
   async function request(path, options = {}, accessToken = "") {
     const response = await fetch(endpoint(path), {
+      signal: AbortSignal.timeout(15000),
       ...options,
       headers: {
         apikey: config.supabaseAnonKey,
@@ -92,6 +98,13 @@
     if (!session) return null;
     if (session.expires_at > Date.now() + 60_000) return session;
 
+    if (refreshPromise) return refreshPromise;
+    refreshPromise = refreshSession();
+    try { return await refreshPromise; }
+    finally { refreshPromise = null; }
+  }
+
+  async function refreshSession() {
     const refreshingSession = session;
     try {
       const refreshed = await request(
@@ -155,6 +168,13 @@
     );
   }
 
+  function orderedWrite(progress) {
+    const snapshot = JSON.parse(JSON.stringify(progress));
+    const write = writeTail.then(() => writeProgress(snapshot));
+    writeTail = write.catch(() => {});
+    return write;
+  }
+
   async function syncNow() {
     if (!isConfigured()) {
       status("unconfigured", "尚未连接 Supabase");
@@ -181,11 +201,12 @@
       const remoteTime = Date.parse(remote?.progress?._updatedAt || remote?.updated_at) || 0;
 
       if (!remote || localTime > remoteTime) {
-        await writeProgress(local);
+        await orderedWrite(local);
       } else if (remoteTime > localTime && remote.progress) {
         setProgress({ ...remote.progress, _ownerId: user.id });
       }
 
+      if (user?.id !== owner) return false;
       readyToSave = true;
       status("synced", "已同步");
       return true;
@@ -219,12 +240,49 @@
   function queueSave(progress) {
     if (!user || !readyToSave) return;
     clearTimeout(saveTimer);
-    const snapshot = JSON.parse(JSON.stringify(progress));
+    pendingProgress = JSON.parse(JSON.stringify(progress));
+    saveVersion += 1;
+    status("syncing", "正在保存进度");
     saveTimer = setTimeout(() => {
-      writeProgress(snapshot)
-        .then(() => status("synced", "已同步"))
+      flushSave()
         .catch((error) => status("error", error.message));
     }, 900);
+  }
+
+  async function flushSave() {
+    clearTimeout(saveTimer);
+    const snapshot = pendingProgress;
+    const version = saveVersion;
+    pendingProgress = null;
+    if (!snapshot) { await writeTail; return; }
+    try {
+      await orderedWrite(snapshot);
+      if (user?.id === snapshot._ownerId && version === saveVersion) status("synced", "已同步");
+    } catch (error) {
+      if (user?.id === snapshot._ownerId && version === saveVersion) pendingProgress = snapshot;
+      throw error;
+    }
+  }
+
+  async function signOut() {
+    try {
+      if (readyToSave) {
+        // Capture the latest local state even if a previous upload failed.
+        pendingProgress = JSON.parse(JSON.stringify(getProgress()));
+        saveVersion += 1;
+        await flushSave();
+        while (pendingProgress) await flushSave();
+      }
+    } catch (error) {
+      status("error", "退出前同步失败，仍保持登录；进度已保留在本机。请联网后重试。");
+      return false;
+    }
+    clearTimeout(saveTimer);
+    saveSession(null);
+    user = null;
+    bindUser(null);
+    status("signed-out", "已退出账号，本机进度已保留");
+    return true;
   }
 
   async function init(handlers) {
@@ -247,13 +305,8 @@
   }
 
   window.NSCACloudSync = {
-    signOut: () => {
-      clearTimeout(saveTimer);
-      saveSession(null);
-      user = null;
-      bindUser(null);
-      status("signed-out", "已退出账号，账号进度仍保存在本机和云端");
-    },
+    signOut,
+    flushSave,
     init,
     isConfigured,
     signInWithGoogle,

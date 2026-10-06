@@ -10,7 +10,7 @@ function setup(fetch, hash = '', expiresAt = Date.now() + 3600000) {
   const statuses = [];
   const location = { hash, origin: 'https://example.com', pathname: '/', search: '', assign(url) { this.destination = url; } };
   const window = { location, alert() {}, NSCA_CLOUD_CONFIG: { supabaseUrl: 'https://example.supabase.co', supabaseAnonKey: 'public' } };
-  const context = { window, location, URL, URLSearchParams, setTimeout, clearTimeout, fetch,
+  const context = { window, location, URL, URLSearchParams, AbortSignal, setTimeout, clearTimeout, fetch,
     history: { replaceState() { location.hash = ''; } },
     localStorage: { getItem: k => storage.get(k), setItem: (k, v) => storage.set(k, v), removeItem: k => storage.delete(k) } };
   vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../cloud-sync.js'), 'utf8'), context);
@@ -147,4 +147,66 @@ test('sign out while remote read is pending cannot restore the previous account'
   await initializing;
   assert.equal(restored, false);
   assert.equal(env.cloud.isSignedIn(), false);
+});
+
+test('concurrent expired-token requests share one refresh', async () => {
+  let refreshes = 0;
+  const env = setup(async url => {
+    if (url.includes('/token?')) {
+      refreshes++;
+      await new Promise(resolve => setImmediate(resolve));
+      return { ok: true, json: async () => ({ access_token: 'new', refresh_token: 'next', expires_in: 3600 }) };
+    }
+    return { ok: true, json: async () => ({ id: 'user-1' }) };
+  }, '', 0);
+  assert.deepEqual(await Promise.all([env.cloud.getAccessToken(), env.cloud.getAccessToken()]), ['new', 'new']);
+  assert.equal(refreshes, 1);
+});
+
+test('uploads are serialized and immediate logout saves newest progress', async () => {
+  let progress = { _ownerId: 'user-1', count: 0 };
+  const writes = [];
+  let active = 0;
+  let maxActive = 0;
+  const env = setup(async (url, options) => {
+    if (url.endsWith('/auth/v1/user')) return { ok: true, json: async () => ({ id: 'user-1' }) };
+    if (options.method === 'POST') {
+      maxActive = Math.max(maxActive, ++active);
+      await new Promise(resolve => setImmediate(resolve));
+      writes.push(JSON.parse(options.body).progress.count);
+      active--;
+      return { ok: true, status: 204 };
+    }
+    return { ok: true, json: async () => [] };
+  });
+  await env.cloud.init({ getProgress: () => progress, setProgress() {}, onStatus() {} });
+  progress = { ...progress, count: 1 };
+  env.cloud.queueSave(progress);
+  const first = env.cloud.flushSave();
+  progress = { ...progress, count: 2 };
+  env.cloud.queueSave(progress);
+  assert.equal(await env.cloud.signOut(), true);
+  await first;
+  assert.equal(maxActive, 1);
+  assert.deepEqual(writes, [0, 1, 2]);
+  assert.equal(env.cloud.isSignedIn(), false);
+});
+
+test('failed logout upload preserves login and allows retry', async () => {
+  let fail = false;
+  const env = setup(async (url, options) => {
+    if (url.endsWith('/auth/v1/user')) return { ok: true, json: async () => ({ id: 'user-1' }) };
+    if (options.method === 'POST') {
+      if (fail) throw new Error('offline');
+      return { ok: true, status: 204 };
+    }
+    return { ok: true, json: async () => [] };
+  });
+  await env.cloud.init({ getProgress: () => ({ _ownerId: 'user-1' }), setProgress() {}, onStatus() {} });
+  fail = true;
+  assert.equal(await env.cloud.signOut(), false);
+  assert.equal(env.cloud.isSignedIn(), true);
+  assert.ok(env.storage.has(env.key));
+  fail = false;
+  assert.equal(await env.cloud.signOut(), true);
 });

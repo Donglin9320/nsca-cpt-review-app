@@ -710,11 +710,19 @@ function renderAnswerSearchTools(question, selectedChoice) {
   `;
 }
 
+const aiAnswerCache = new Map();
+
 async function askKimiDirectly(button) {
+  if (button.disabled) return;
   const panel = button.closest(".answer-search-panel");
   const answerBox = panel?.querySelector("[data-kimi-answer]");
   const content = panel?.querySelector("[data-kimi-content]");
   if (!answerBox || !content) return;
+
+  const originalLabel = button.textContent;
+  const owner = activeUserId;
+  const prompt = button.dataset.askKimi || "";
+  button.disabled = true;
 
   const cloud = window.NSCACloudSync;
   let accessToken;
@@ -725,31 +733,43 @@ async function askKimiDirectly(button) {
   } catch {
     content.textContent = "暂时无法连接登录服务，请稍后重试。你的本地答题进度仍然保留。";
     answerBox.classList.add("error");
+    button.disabled = false;
     return;
   }
 
   if (!accessToken) {
     content.textContent = "请先点击页面顶部的“使用 Google 登录”，登录后再试。";
     answerBox.classList.add("error");
+    button.disabled = false;
     return;
   }
 
-  const originalLabel = button.textContent;
-  button.disabled = true;
   button.textContent = "正在解释…";
   content.textContent = "正在结合题目和你的答案生成解释。";
 
   try {
+    if (activeUserId !== owner) { button.textContent = originalLabel; return; }
+    const cached = aiAnswerCache.get(prompt);
+    if (originalLabel !== "重新询问" && cached && cached.owner === owner && cached.expires > Date.now()) {
+      content.textContent = cached.answer;
+      answerBox.querySelector("[data-ai-model]").textContent = cached.model;
+      button.textContent = "重新询问";
+      return;
+    }
     const response = await fetch("/api/kimi", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ prompt: button.dataset.askKimi || "" }),
+      body: JSON.stringify({ prompt }),
     });
     const body = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(body.error || `请求失败 (${response.status})`);
+    if (activeUserId !== owner) return;
+    if (typeof body.answer !== "string" || !body.answer.trim()) throw new Error("AI 暂未返回解释，请重试。");
+    if (aiAnswerCache.size >= 50) aiAnswerCache.delete(aiAnswerCache.keys().next().value);
+    aiAnswerCache.set(prompt, { owner, answer: body.answer, model: body.model || "AI 助教", expires: Date.now() + 30 * 60 * 1000 });
     content.textContent = body.answer;
     answerBox.querySelector("[data-ai-model]").textContent = body.model || "AI 助教";
     button.textContent = "重新询问";
@@ -940,6 +960,7 @@ async function startCloudSync() {
       const id = user?.id || null;
       if (id === activeUserId) return;
       activeUserId = id;
+      aiAnswerCache.clear();
       storageKey = id ? `${guestStorageKey}:${id}` : guestStorageKey;
       loadProgress();
       state.progress._ownerId = id;

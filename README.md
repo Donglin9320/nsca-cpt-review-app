@@ -77,6 +77,24 @@ After deployment, verify the AI and sync flows:
 
 Local checks: `node --test tests/*.test.cjs`. These use mocks and do not prove live OAuth, database policies, model access, or email delivery.
 
+## Response Speed and Save Reliability
+
+AI explanations are cached in memory for 30 minutes (up to 50 exact prompts).
+Revisiting the same question and selected answer in the same page session can reuse
+the explanation without another model request. Regenerate bypasses this cache;
+switching accounts clears it. A reload also clears it. This does not reduce the
+provider's first-generation latency or shorten the educational explanation.
+
+Concurrent token refreshes within a page share one request. Progress writes are
+serialized within that page, and explicit logout uploads the latest local progress
+before removing the session. Failed logout uploads keep the account signed in and
+show an error so the upload can be retried. Supabase requests time out after 15 seconds.
+
+Remaining limits: closing a tab is not the same as explicit logout, so a pending
+upload may remain local until the next successful sync. Simultaneous edits from
+different devices still use timestamp-based snapshot selection, not an answer-by-answer
+merge. Cross-device conflict resolution and live OAuth flows need separate verification.
+
 ## Android Installation
 
 Open the production URL in Android Chrome, then choose **Install app** or **Add to Home screen** from the browser menu.
