@@ -1,8 +1,9 @@
-const CACHE_NAME = "nsca-cpt-review-v12";
+const CACHE_NAME = "nsca-cpt-review-v13";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css",
+  "./ui.css",
   "./app.js",
   "./cloud-config.js",
   "./cloud-sync.js",

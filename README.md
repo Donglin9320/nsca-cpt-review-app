@@ -85,6 +85,17 @@ the explanation without another model request. Regenerate bypasses this cache;
 switching accounts clears it. A reload also clears it. This does not reduce the
 provider's first-generation latency or shorten the educational explanation.
 
+The browser now bounds each model request (including reading its response body)
+to 55 seconds, aborts stalled requests, and restores the retry button. The server
+still bounds model generation to 45 seconds within its 60-second function budget.
+Gateway timeout and quota errors have explicit messages. Length-truncated answers
+are rejected rather than cached as complete explanations. Successful API responses
+include `Server-Timing` for authentication and model latency; model connection
+failures log only the model name, elapsed time, and timeout flag, never prompts,
+emails, or tokens. These controls prevent indefinite waiting; they do not guarantee
+provider availability or lower model latency. Live provider speed has not been
+verified in this update.
+
 Concurrent token refreshes within a page share one request. Progress writes are
 serialized within that page, and explicit logout uploads the latest local progress
 before removing the session. Failed logout uploads keep the account signed in and
@@ -94,6 +105,23 @@ Remaining limits: closing a tab is not the same as explicit logout, so a pending
 upload may remain local until the next successful sync. Simultaneous edits from
 different devices still use timestamp-based snapshot selection, not an answer-by-answer
 merge. Cross-device conflict resolution and live OAuth flows need separate verification.
+
+## UI Accessibility Rules
+
+`ui.css` defines the study interface's visual tokens: 6px controls, 8px framed
+content, and pill badges. System sans-serif fonts have explicit Chinese fallbacks;
+no remote font download is required. Question headings use 28px on desktop and
+23px on mobile; explanations and warning messages use 16px with generous line height.
+Only menus and image dialogs have elevation shadows. Navigation uses opaque
+backgrounds, avoiding stacked backdrop blur. The interface currently supports a
+light theme only; it does not claim a separately validated dark palette.
+
+Reduced-motion CSS disables animations and transitions while retaining static
+answer feedback, XP, and progress text. Static regression tests cover palette
+contrast and this CSS rule. Local Chrome checks covered 320, 390, 768, 1024, and
+1440px widths without horizontal page overflow, plus correct/incorrect answer
+states and the notes view. An actual OS reduced-motion toggle and low-end phone
+performance were not tested. These checks do not access production account data.
 
 ## Android Installation
 

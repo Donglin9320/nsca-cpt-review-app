@@ -712,6 +712,40 @@ function renderAnswerSearchTools(question, selectedChoice) {
 
 const aiAnswerCache = new Map();
 
+async function requestAiAnswer(accessToken, prompt) {
+  const controller = new AbortController();
+  let timer;
+  const deadline = new Promise((_, reject) => {
+    timer = setTimeout(() => {
+      const error = new Error("AI 等待超过 55 秒，已停止本次请求。请稍后重试；答题进度不受影响。");
+      reject(error);
+      controller.abort();
+    }, 55000);
+  });
+  try {
+    return await Promise.race([deadline, (async () => {
+      const response = await fetch("/api/kimi", {
+        method: "POST",
+        signal: controller.signal,
+        headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt }),
+      });
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        const fallback = response.status === 504
+          ? "AI 服务等待超时，请稍后重试。"
+          : response.status === 429
+            ? "AI 服务繁忙或请求受限，请稍后重试。"
+            : `AI 服务请求失败 (${response.status})，请稍后重试。`;
+        throw new Error(body.error || fallback);
+      }
+      return body;
+    })()]);
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 async function askKimiDirectly(button) {
   if (button.disabled) return;
   const panel = button.closest(".answer-search-panel");
@@ -723,6 +757,7 @@ async function askKimiDirectly(button) {
   const owner = activeUserId;
   const prompt = button.dataset.askKimi || "";
   button.disabled = true;
+  button.textContent = "正在验证登录…";
 
   const cloud = window.NSCACloudSync;
   let accessToken;
@@ -734,6 +769,7 @@ async function askKimiDirectly(button) {
     content.textContent = "暂时无法连接登录服务，请稍后重试。你的本地答题进度仍然保留。";
     answerBox.classList.add("error");
     button.disabled = false;
+    button.textContent = originalLabel;
     return;
   }
 
@@ -741,6 +777,7 @@ async function askKimiDirectly(button) {
     content.textContent = "请先点击页面顶部的“使用 Google 登录”，登录后再试。";
     answerBox.classList.add("error");
     button.disabled = false;
+    button.textContent = originalLabel;
     return;
   }
 
@@ -756,16 +793,7 @@ async function askKimiDirectly(button) {
       button.textContent = "重新询问";
       return;
     }
-    const response = await fetch("/api/kimi", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ prompt }),
-    });
-    const body = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(body.error || `请求失败 (${response.status})`);
+    const body = await requestAiAnswer(accessToken, prompt);
     if (activeUserId !== owner) return;
     if (typeof body.answer !== "string" || !body.answer.trim()) throw new Error("AI 暂未返回解释，请重试。");
     if (aiAnswerCache.size >= 50) aiAnswerCache.delete(aiAnswerCache.keys().next().value);
@@ -917,6 +945,9 @@ function saveProgress() {
 }
 
 function updateCloudStatus({ value, message, signedIn }) {
+  const warning = document.querySelector("#cloudStatusMessage");
+  warning.hidden = value !== "error";
+  warning.textContent = value === "error" ? `同步提醒：${message || "同步失败，请稍后重试。"}` : "";
   document.querySelector("#signOutBtn").hidden = !signedIn;
   if (!els.cloudSyncBtn) return;
   const labels = {

@@ -22,6 +22,8 @@ function answerText(messageContent) {
 }
 
 module.exports = async function handler(request, response) {
+  const startedAt = Date.now();
+  response.setHeader("Cache-Control", "no-store");
   if (request.method !== "POST") {
     response.setHeader("Allow", "POST");
     sendJson(response, 405, { error: "只支持 POST 请求。" });
@@ -82,6 +84,7 @@ module.exports = async function handler(request, response) {
   }
 
   const controller = new AbortController();
+  const modelStartedAt = Date.now();
   const timeout = setTimeout(() => controller.abort(), 45_000);
   try {
     const aiResponse = await fetch(NVIDIA_URL, {
@@ -139,6 +142,11 @@ module.exports = async function handler(request, response) {
       return;
     }
 
+    response.setHeader("Server-Timing", `auth;dur=${modelStartedAt - startedAt}, model;dur=${Date.now() - modelStartedAt}`);
+    if (result?.choices?.[0]?.finish_reason === "length") {
+      sendJson(response, 502, { error: "模型生成达到长度上限，解析尚未完成。请稍后重试。" });
+      return;
+    }
     const answer = answerText(result?.choices?.[0]?.message?.content);
     if (!answer) {
       sendJson(response, 502, { error: "AI 未返回完整的可显示回答，请稍后重试。" });
@@ -146,9 +154,10 @@ module.exports = async function handler(request, response) {
     }
     sendJson(response, 200, { answer, model });
   } catch (error) {
+    console.warn("ai_model_request_failed", { model, elapsedMs: Date.now() - modelStartedAt, timedOut: controller.signal.aborted });
     sendJson(response, 504, {
       error:
-        error?.name === "AbortError" ? "AI 响应超时，请稍后再试。" : "暂时无法连接 AI 服务。",
+        controller.signal.aborted ? "模型服务在 45 秒内未完成回答，请稍后再试。" : "暂时无法连接 AI 服务。",
     });
   } finally {
     clearTimeout(timeout);
