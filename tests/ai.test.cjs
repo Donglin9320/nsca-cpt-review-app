@@ -5,6 +5,9 @@ const handler = require('../api/kimi');
 test('NVIDIA request uses Kimi K3, returns final answer and handles retired models', async () => {
   const before = { ...process.env };
   const originalFetch = global.fetch;
+  const originalInfo = console.info;
+  const logs = [];
+  console.info = line => logs.push(JSON.parse(line));
   try {
     Object.assign(process.env, { SUPABASE_URL: 'https://example.supabase.co', SUPABASE_PUBLISHABLE_KEY: 'public', NVIDIA_API_KEY: 'test' });
     delete process.env.NVIDIA_MODEL;
@@ -24,8 +27,15 @@ test('NVIDIA request uses Kimi K3, returns final answer and handles retired mode
         assert.equal(response.body.answer, 'Final answer');
         assert.equal(response.body.model, 'moonshotai/kimi-k3');
       }
+      assert.equal(response.body.retryable === true, upstreamStatus === 503);
+    }
+    assert.equal(logs.length, 6);
+    for (const entry of logs) {
+      assert.deepEqual(Object.keys(entry).sort(), ['event', 'stage', 'status', 'outcome', 'totalMs', 'authMs', 'modelMs'].sort());
+      assert.equal(entry.stage, 'model');
     }
   } finally {
+    console.info = originalInfo;
     global.fetch = originalFetch;
     for (const key of ['SUPABASE_URL', 'SUPABASE_PUBLISHABLE_KEY', 'NVIDIA_API_KEY', 'NVIDIA_MODEL']) {
       if (before[key] === undefined) delete process.env[key]; else process.env[key] = before[key];

@@ -79,11 +79,25 @@ Local checks: `node --test tests/*.test.cjs`. These use mocks and do not prove l
 
 ## Response Speed and Save Reliability
 
-AI explanations are cached in memory for 30 minutes (up to 50 exact prompts).
-Revisiting the same question and selected answer in the same page session can reuse
-the explanation without another model request. Regenerate bypasses this cache;
-switching accounts clears it. A reload also clears it. This does not reduce the
-provider's first-generation latency or shorten the educational explanation.
+AI explanations are cached for 24 hours, with at most 50 exact prompts per account
+in browser local storage and a bounded memory cache. Reloading preserves the local
+cache; switching accounts clears memory and selects the other account's storage.
+Regenerate bypasses cached answers. Exact prompt matching invalidates changed
+questions/options, and `AI_CACHE_VERSION` must be bumped when explanation rules or
+the configured model change. The cache contains study prompts and answers, not
+credentials; it is not encrypted against other people using the same browser profile.
+Storage errors fall back to memory. No incomplete/error response is cached.
+
+Within one page, concurrent requests for the same account and exact prompt share
+one model request, including regeneration while that request is still pending.
+This does not deduplicate across tabs or devices. Network failures and explicitly
+retryable 502/503 responses receive at most one retry after 500-999ms of jitter.
+Authentication, quota, configuration, retired-model and timeout errors are not
+automatically retried. No new retry starts after 35 seconds; both attempts share
+the original 55-second deadline. A lost network response may still have incurred
+provider work; this is not a guarantee of exactly-once execution or zero duplicate cost.
+These changes do not shorten educational explanations or reduce first-generation
+latency on a healthy provider.
 
 The browser now bounds each model request (including reading its response body)
 to 55 seconds, aborts stalled requests, and restores the retry button. The server
@@ -95,6 +109,21 @@ failures log only the model name, elapsed time, and timeout flag, never prompts,
 emails, or tokens. These controls prevent indefinite waiting; they do not guarantee
 provider availability or lower model latency. Live provider speed has not been
 verified in this update.
+
+Every API response writes a structured `ai_request` event to Vercel runtime logs:
+stage, HTTP status, success/error/timeout outcome, total time, authentication time,
+and model time. No prompts, email addresses, account IDs, keys or tokens are included.
+To summarize extracted JSON event messages (one JSON object per line), run:
+
+```sh
+node scripts/summarize-ai-logs.cjs < ai-events.jsonl
+```
+
+The summary reports model-attempt success/timeout rates, auth failures, and P50/P95
+of successful request/auth/model durations. Retries count as separate API attempts;
+browser cache hits do not reach the API and are excluded. Missing samples return
+null, not an invented zero-latency result. Log retention depends on the Vercel plan.
+No new analytics service or user-tracking service has been added.
 
 Concurrent token refreshes within a page share one request. Progress writes are
 serialized within that page, and explicit logout uploads the latest local progress

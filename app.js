@@ -711,9 +711,47 @@ function renderAnswerSearchTools(question, selectedChoice) {
 }
 
 const aiAnswerCache = new Map();
+const aiRequests = new Map();
+// Bump when explanation rules or model compatibility change.
+const AI_CACHE_VERSION = "v2";
+
+function readAiCache(owner, prompt) {
+  if (!owner) return null;
+  let cached = aiAnswerCache.get(prompt);
+  if (!cached || cached.owner !== owner || cached.expires <= Date.now()) {
+    try {
+      const entries = JSON.parse(localStorage.getItem(`nsca-cpt:ai:${AI_CACHE_VERSION}:${owner}`) || "[]");
+      cached = entries.find(entry => entry.prompt === prompt && entry.owner === owner);
+    } catch { return null; }
+  }
+  return cached && cached.expires > Date.now() && typeof cached.answer === "string" && cached.answer.trim() ? cached : null;
+}
+
+function saveAiCache(owner, prompt, body) {
+  const entry = { owner, prompt, answer: body.answer, model: body.model || "AI 助教", expires: Date.now() + 24 * 60 * 60 * 1000 };
+  if (aiAnswerCache.size >= 50) aiAnswerCache.delete(aiAnswerCache.keys().next().value);
+  aiAnswerCache.set(prompt, entry);
+  if (!owner) return;
+  try {
+    const key = `nsca-cpt:ai:${AI_CACHE_VERSION}:${owner}`;
+    const stored = JSON.parse(localStorage.getItem(key) || "[]");
+    const entries = Array.isArray(stored) ? stored.filter(item => item.owner === owner && item.prompt !== prompt && item.expires > Date.now()) : [];
+    localStorage.setItem(key, JSON.stringify([...entries, entry].slice(-50)));
+  } catch { /* Storage may be unavailable; the in-memory cache still works. */ }
+}
+
+function sharedAiAnswer(owner, accessToken, prompt) {
+  const key = JSON.stringify([owner, prompt]);
+  if (!aiRequests.has(key)) {
+    const pending = requestAiAnswer(accessToken, prompt).finally(() => aiRequests.delete(key));
+    aiRequests.set(key, pending);
+  }
+  return aiRequests.get(key);
+}
 
 async function requestAiAnswer(accessToken, prompt) {
   const controller = new AbortController();
+  const startedAt = Date.now();
   let timer;
   const deadline = new Promise((_, reject) => {
     timer = setTimeout(() => {
@@ -724,22 +762,33 @@ async function requestAiAnswer(accessToken, prompt) {
   });
   try {
     return await Promise.race([deadline, (async () => {
-      const response = await fetch("/api/kimi", {
-        method: "POST",
-        signal: controller.signal,
-        headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt }),
-      });
-      const body = await response.json().catch(() => ({}));
-      if (!response.ok) {
-        const fallback = response.status === 504
-          ? "AI 服务等待超时，请稍后重试。"
-          : response.status === 429
-            ? "AI 服务繁忙或请求受限，请稍后重试。"
-            : `AI 服务请求失败 (${response.status})，请稍后重试。`;
-        throw new Error(body.error || fallback);
+      for (let attempt = 0; attempt < 2; attempt++) {
+        if (controller.signal.aborted) throw new Error("AI 请求已停止，请重试。");
+        try {
+          const response = await fetch("/api/kimi", {
+            method: "POST",
+            signal: controller.signal,
+            headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
+            body: JSON.stringify({ prompt }),
+          });
+          const body = await response.json().catch(() => ({}));
+          if (!response.ok) {
+            const fallback = response.status === 504
+              ? "AI 服务等待超时，请稍后重试。"
+              : response.status === 429
+                ? "AI 服务繁忙或请求受限，请稍后重试。"
+                : `AI 服务请求失败 (${response.status})，请稍后重试。`;
+            const error = new Error(body.error || fallback);
+            error.retryable = [502, 503].includes(response.status) && (body.retryable === true || !body.error);
+            throw error;
+          }
+          return body;
+        } catch (error) {
+          const retryable = error.retryable === true || error.name === "TypeError";
+          if (attempt > 0 || !retryable || controller.signal.aborted || Date.now() - startedAt > 35000) throw error;
+          await new Promise(resolve => setTimeout(resolve, 500 + Math.floor(Math.random() * 500)));
+        }
       }
-      return body;
     })()]);
   } finally {
     clearTimeout(timer);
@@ -786,18 +835,17 @@ async function askKimiDirectly(button) {
 
   try {
     if (activeUserId !== owner) { button.textContent = originalLabel; return; }
-    const cached = aiAnswerCache.get(prompt);
+    const cached = readAiCache(owner, prompt);
     if (originalLabel !== "重新询问" && cached && cached.owner === owner && cached.expires > Date.now()) {
       content.textContent = cached.answer;
       answerBox.querySelector("[data-ai-model]").textContent = cached.model;
       button.textContent = "重新询问";
       return;
     }
-    const body = await requestAiAnswer(accessToken, prompt);
+    const body = await sharedAiAnswer(owner, accessToken, prompt);
     if (activeUserId !== owner) return;
     if (typeof body.answer !== "string" || !body.answer.trim()) throw new Error("AI 暂未返回解释，请重试。");
-    if (aiAnswerCache.size >= 50) aiAnswerCache.delete(aiAnswerCache.keys().next().value);
-    aiAnswerCache.set(prompt, { owner, answer: body.answer, model: body.model || "AI 助教", expires: Date.now() + 30 * 60 * 1000 });
+    saveAiCache(owner, prompt, body);
     content.textContent = body.answer;
     answerBox.querySelector("[data-ai-model]").textContent = body.model || "AI 助教";
     button.textContent = "重新询问";

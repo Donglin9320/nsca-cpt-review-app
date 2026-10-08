@@ -3,6 +3,15 @@ const NVIDIA_URL = "https://integrate.api.nvidia.com/v1/chat/completions";
 const DEFAULT_MODEL = "moonshotai/kimi-k3";
 
 function sendJson(response, status, body) {
+  if (response.aiMetrics) {
+    const { startedAt, modelStartedAt, stage } = response.aiMetrics;
+    const now = Date.now();
+    console.info(JSON.stringify({ event: "ai_request", stage, status,
+      outcome: status === 200 ? "success" : status === 504 ? "timeout" : "error",
+      totalMs: now - startedAt,
+      authMs: modelStartedAt ? modelStartedAt - startedAt : now - startedAt,
+      modelMs: modelStartedAt ? now - modelStartedAt : 0 }));
+  }
   response.status(status).setHeader("Content-Type", "application/json; charset=utf-8");
   response.end(JSON.stringify(body));
 }
@@ -23,6 +32,7 @@ function answerText(messageContent) {
 
 module.exports = async function handler(request, response) {
   const startedAt = Date.now();
+  response.aiMetrics = { startedAt, stage: "validation" };
   response.setHeader("Cache-Control", "no-store");
   if (request.method !== "POST") {
     response.setHeader("Allow", "POST");
@@ -56,6 +66,7 @@ module.exports = async function handler(request, response) {
   }
 
   let user;
+  response.aiMetrics.stage = "auth";
   try {
     const userResponse = await fetch(`${supabaseUrl.replace(/\/$/, "")}/auth/v1/user`, {
       headers: {
@@ -85,6 +96,8 @@ module.exports = async function handler(request, response) {
 
   const controller = new AbortController();
   const modelStartedAt = Date.now();
+  response.aiMetrics.modelStartedAt = modelStartedAt;
+  response.aiMetrics.stage = "model";
   const timeout = setTimeout(() => controller.abort(), 45_000);
   try {
     const aiResponse = await fetch(NVIDIA_URL, {
@@ -133,6 +146,7 @@ module.exports = async function handler(request, response) {
           ? "NVIDIA API Key 无效，请重新生成并在 Vercel 更新。"
           : "NVIDIA 账号尚无此模型权限，或未完成试用授权。";
       sendJson(response, isQuotaError ? 429 : 502, {
+        retryable: [502, 503].includes(aiResponse.status),
         error: isQuotaError
           ? "NVIDIA 免费接口请求过于频繁，请稍后再试。"
           : aiResponse.status === 401 || aiResponse.status === 403
@@ -155,7 +169,8 @@ module.exports = async function handler(request, response) {
     sendJson(response, 200, { answer, model });
   } catch (error) {
     console.warn("ai_model_request_failed", { model, elapsedMs: Date.now() - modelStartedAt, timedOut: controller.signal.aborted });
-    sendJson(response, 504, {
+    sendJson(response, controller.signal.aborted ? 504 : 502, {
+      retryable: !controller.signal.aborted,
       error:
         controller.signal.aborted ? "模型服务在 45 秒内未完成回答，请稍后再试。" : "暂时无法连接 AI 服务。",
     });
