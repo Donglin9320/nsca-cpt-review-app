@@ -165,3 +165,16 @@ select:focus-visible, summary:focus-visible { outline: 3px solid #0b6b43; outlin
     scroll-behavior: auto !important;
   }
 }
+/* Reviewed study notes keep correction text readable before the source image. */
+.study-blueprint { grid-column: 1 / -1; border-bottom: 1px solid #aebbb5; padding: 16px 0 24px; }
+.study-blueprint h3 { font-size: 22px; line-height: 1.4; }
+.study-blueprint p, .study-scope { font-size: 16px; line-height: 1.75; color: #293b32; }
+.study-scope { margin: 16px 0; }
+.point-image-grid:has(.reviewed-figure) { grid-template-columns: minmax(0, 1fr); }
+.reviewed-figure { width: 100%; min-width: 0; }
+.reviewed-figure .figure-correction { margin: 12px 0; padding: 12px; border-left: 4px solid #95500b; background: #fff4df; color: #643409; font-size: 16px; font-weight: 500; line-height: 1.75; }
+.reviewed-figure img { width: 100%; height: auto !important; max-height: none !important; object-fit: contain; }
+.reviewed-figure figcaption { padding-bottom: 12px; }
+.reviewed-figure figcaption strong { font-size: 17px; line-height: 1.5; }
+.reviewed-figure figcaption span, .reviewed-figure a { font-size: 14px; line-height: 1.6; }
+.study-blueprint a, .reviewed-figure a { color: #075b40; text-decoration: underline; overflow-wrap: anywhere; }

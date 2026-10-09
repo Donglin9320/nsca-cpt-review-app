@@ -1,4 +1,4 @@
-const CACHE_NAME = "nsca-cpt-review-v14";
+const CACHE_NAME = "nsca-cpt-review-v15";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -9,6 +9,10 @@ const APP_SHELL = [
   "./cloud-sync.js",
   "./quiz-session.js",
   "./data.js",
+  "./study-guides.js",
+  "./assets/user-guides/moment-arm.png",
+  "./assets/user-guides/movement-planes.png",
+  "./assets/user-guides/bench-press.jpg",
   "./manifest.webmanifest",
   "./assets/icons/icon-192.png",
   "./assets/icons/icon-512.png",

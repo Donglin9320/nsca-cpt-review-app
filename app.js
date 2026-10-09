@@ -177,380 +177,6 @@ const unitGuideImageMeta = {
   "./assets/diagrams/training-variables.svg": ["训练变量", "区分强度值、volume-load和repetition-volume。"]
 };
 
-const unitDeepGuides = {
-  "exercise_science": {
-    "images": [
-      "./assets/diagrams/anatomical-planes.svg",
-      "./assets/diagrams/biomechanics-torque.svg",
-      "./assets/diagrams/energy-systems.svg",
-      "./assets/diagrams/muscle-anterior.svg",
-      "./assets/diagrams/muscle-posterior.svg"
-    ],
-    "subunits": [
-      {
-        "title": "运动平面",
-        "points": [
-          "屈曲/伸展：矢状面。",
-          "外展/内收/侧屈：额状面。",
-          "旋转/水平动作：水平面。",
-          "先看关节动作，再选平面。"
-        ]
-      },
-      {
-        "title": "肌肉角色",
-        "points": [
-          {
-            "text": "主动肌：完成主要动作。",
-            "images": ["./assets/diagrams/muscle-anterior.svg", "./assets/diagrams/muscle-posterior.svg"]
-          },
-          "协同肌：帮主动肌一起发力。",
-          {
-            "text": "拮抗肌：做相反动作，常用来控制动作速度。",
-            "images": ["./assets/diagrams/muscle-anterior.svg", "./assets/diagrams/muscle-posterior.svg"]
-          },
-          "稳定肌：固定姿势或关节。"
-        ]
-      },
-      {
-        "title": "肌肉解剖速查",
-        "points": [
-          {
-            "text": "前侧肌群：胸大肌、三角肌前束、肱二头肌、腹直肌、股四头肌。",
-            "images": ["./assets/diagrams/muscle-anterior.svg"]
-          },
-          {
-            "text": "后侧肌群：斜方肌、背阔肌、竖脊肌、臀大肌、腘绳肌、腓肠肌。",
-            "images": ["./assets/diagrams/muscle-posterior.svg"]
-          },
-          "记肌肉不要背一堆名字，先记它跨过哪个关节、能把关节拉向哪里。"
-        ]
-      },
-      {
-        "title": "收缩类型",
-        "points": [
-          "向心：目标肌缩短，通常是克服阻力的阶段。",
-          "离心：目标肌被拉长，但仍在用力控制阻力。",
-          "等长：关节角度不变，肌肉长度基本不变。",
-          "不要用“上升/下降”硬背；永远看目标肌是在缩短、拉长，还是不变。"
-        ]
-      },
-      {
-        "title": "拮抗肌判断",
-        "points": [
-          "先找本题问的动作：屈、伸、外展、内收或旋转。",
-          "主动肌让动作发生；拮抗肌做相反动作。",
-          "肘屈曲：肱二头肌主动，肱三头肌拮抗。",
-          "膝伸展：股四头肌主动，腘绳肌拮抗。"
-        ]
-      },
-      {
-        "title": "供能系统",
-        "points": [
-          "ATP-PC：0-10 秒爆发。",
-          "糖酵解：高强度几十秒。",
-          "有氧氧化：持续时间长。",
-          "时间和强度是判断关键。"
-        ]
-      },
-      {
-        "title": "力臂力矩",
-        "points": [
-          "力矩=让关节转动的力。",
-          "阻力线离关节越远，力矩越大。",
-          "侧平举到水平位最难。",
-          "负重离身体远，腰髋压力大。"
-        ]
-      }
-    ]
-  },
-  "assessment": {
-    "images": [
-      "./assets/diagrams/assessment-flow.svg",
-      "./assets/diagrams/body-composition.svg"
-    ],
-    "subunits": [
-      {
-        "title": "咨询顺序",
-        "points": [
-          "先问目标。",
-          "再筛健康风险。",
-          "确认运动史和限制。",
-          "有红旗症状就转介。"
-        ]
-      },
-      {
-        "title": "测试质量",
-        "points": [
-          "可靠性：结果稳定。",
-          "效度：测得准。",
-          "客观性：换人测也一致。",
-          "特异性：贴近目标能力。"
-        ]
-      },
-      {
-        "title": "测试顺序",
-        "points": [
-          "安静指标先做。",
-          "低疲劳测试靠前。",
-          "力量/功率放中间。",
-          "有氧等高疲劳放最后。"
-        ]
-      },
-      {
-        "title": "常考测试",
-        "points": [
-          "纵跳：下肢功率。",
-          "T 测试：敏捷变向。",
-          "坐位体前屈：柔韧性。",
-          "1RM：最大力量。"
-        ]
-      }
-    ]
-  },
-  "technique_safety": {
-    "images": [
-      "./assets/diagrams/bench-five-points.svg",
-      "./assets/diagrams/pnf-stretch.svg",
-      "./assets/diagrams/spotting-map.svg"
-    ],
-    "subunits": [
-      {
-        "title": "卧推安全",
-        "points": [
-          "五点接触：头、肩背、臀、双脚。",
-          "肩胛稳定。",
-          "下放可控。",
-          "保护员看杠铃和手腕。"
-        ]
-      },
-      {
-        "title": "髋铰链",
-        "points": [
-          "髋向后折。",
-          "脊柱保持中立。",
-          "负重贴近身体。",
-          "主要用臀大肌、腘绳肌、竖脊肌。"
-        ]
-      },
-      {
-        "title": "拉伸方式",
-        "points": [
-          "动态：热身。",
-          "静态：保持末端位置。",
-          "PNF：拉伸加收缩。",
-          "弹震：风险更高。"
-        ]
-      },
-      {
-        "title": "动作阶段",
-        "points": [
-          "向心：目标肌缩短，动作在克服阻力。",
-          "离心：目标肌变长，动作在控制阻力。",
-          "等长：姿势停住，关节角度基本不变。",
-          "例：深蹲下蹲时股四头肌离心，站起时股四头肌向心。"
-        ]
-      },
-      {
-        "title": "握法",
-        "points": [
-          "正握：手掌向下/向后。",
-          "反握：手掌向上/向前。",
-          "正反握：常用于大重量硬拉。",
-          "钩握：拇指压在食指和中指下。"
-        ]
-      }
-    ]
-  },
-  "program_design": {
-    "images": [
-      "./assets/diagrams/program-variables.svg",
-      "./assets/diagrams/plyometric-cycle.svg"
-    ],
-    "subunits": [
-      {
-        "title": "目标变量",
-        "points": [
-          "力量：重、少、休息长。",
-          "肌肥大：训练量足。",
-          "肌耐力：轻、中重量，高次数。",
-          "功率：速度优先。"
-        ]
-      },
-      {
-        "title": "动作顺序",
-        "points": [
-          "爆发力动作先做。",
-          "多关节大动作靠前。",
-          "辅助动作靠后。",
-          "技术难的动作不要放疲劳后。"
-        ]
-      },
-      {
-        "title": "增强式",
-        "points": [
-          "先离心预拉长。",
-          "转换期越短越好。",
-          "向心阶段快速发力。",
-          "质量下降就该停止。"
-        ]
-      },
-      {
-        "title": "周期化",
-        "points": [
-          "宏周期：大目标。",
-          "中周期：阶段目标。",
-          "微周期：通常一周。",
-          "目的：安排压力和恢复。"
-        ]
-      }
-    ]
-  },
-  "nutrition": {
-    "images": [
-      "./assets/diagrams/nutrition-macros.svg",
-      "./assets/diagrams/hydration-warning.svg"
-    ],
-    "subunits": [
-      {
-        "title": "热量计算",
-        "points": [
-          "碳水：4 kcal/g。",
-          "蛋白质：4 kcal/g。",
-          "脂肪：9 kcal/g。",
-          "比例=该营养素热量/总热量。"
-        ]
-      },
-      {
-        "title": "补液",
-        "points": [
-          "口渴感不够可靠。",
-          "看体重变化。",
-          "看温度和湿度。",
-          "看训练时长和强度。"
-        ]
-      },
-      {
-        "title": "营养职责",
-        "points": [
-          "可以讲一般营养知识。",
-          "不能开治疗饮食处方。",
-          "进食障碍要转介。",
-          "补剂先看安全、合法、证据。"
-        ]
-      },
-      {
-        "title": "高频风险",
-        "points": [
-          "低能量摄入会影响恢复。",
-          "铁不足会影响耐力。",
-          "脱水会影响体温调节。",
-          "极端减重不适合运动表现。"
-        ]
-      }
-    ]
-  },
-  "facility_management": {
-    "images": [
-      "./assets/diagrams/facility-layout.svg",
-      "./assets/diagrams/facility-safety.svg"
-    ],
-    "subunits": [
-      {
-        "title": "政策程序",
-        "points": [
-          "政策：规则。",
-          "程序：执行步骤。",
-          "规则要能落地。",
-          "记录要留痕。"
-        ]
-      },
-      {
-        "title": "场馆布局",
-        "points": [
-          "阻力器械至少间隔 61 cm，最好 91 cm。",
-          "主要走道至少 91 cm，能让轮椅通过。",
-          "循环训练走道约 1.2-2.1 m。",
-          "架子/平台之间约 0.9-1.2 m。"
-        ]
-      },
-      {
-        "title": "安全缓冲区",
-        "points": [
-          "自由重量区避免无关人员穿行。",
-          "落杠区和行走区要分开。",
-          "地面、线缆、垫子不能制造绊倒风险。",
-          "器械之间留空间，是为了监督、进出和紧急处理。"
-        ]
-      },
-      {
-        "title": "应急计划",
-        "points": [
-          "谁负责。",
-          "设备在哪里。",
-          "电话打给谁。",
-          "救援路线怎么走。"
-        ]
-      },
-      {
-        "title": "职责边界",
-        "points": [
-          "不诊断。",
-          "不治疗。",
-          "不开医疗处方。",
-          "发现风险要转介。"
-        ]
-      }
-    ]
-  },
-  "practical_video": {
-    "images": [
-      "./assets/diagrams/video-checklist.svg",
-      "./assets/diagrams/muscle-anterior.svg",
-      "./assets/diagrams/muscle-posterior.svg"
-    ],
-    "subunits": [
-      {
-        "title": "看视频顺序",
-        "points": [
-          "先看动作阶段。",
-          "再看关节方向。",
-          "再看主要肌肉。",
-          "最后看错误和风险。"
-        ]
-      },
-      {
-        "title": "常见错误",
-        "points": [
-          "膝内扣。",
-          "耸肩。",
-          "塌腰。",
-          "杠铃离身体太远。"
-        ]
-      },
-      {
-        "title": "常见肌群",
-        "points": [
-          "推：胸大肌、三角肌前束、肱三头肌。",
-          "拉：背阔肌、斜方肌、菱形肌。",
-          "蹲：股四头肌、臀大肌。",
-          "髋铰链：臀大肌、腘绳肌、竖脊肌。"
-        ]
-      },
-      {
-        "title": "保护判断",
-        "points": [
-          "看动作风险。",
-          "看是否过头或大重量。",
-          "看失败时能否安全脱离。",
-          "保护员不要挡住动作路径。"
-        ]
-      }
-    ]
-  }
-};
-
-const unitGuideAddenda = {};
-
 const state = {
   syllabus: [],
   questions: [],
@@ -1441,9 +1067,9 @@ function buildExplanationAddenda(choiceText) {
 }
 
 function renderExplanationImages(question) {
-  if (!question.showExplanationImages) return "";
-  const images = question.explanationImages || [];
-  if (!images.length) return "";
+  const reviewed = renderInlineGuideImages(window.NSCA_STUDY_GUIDES.figuresForQuestion(question));
+  const images = question.showExplanationImages ? question.explanationImages || [] : [];
+  if (!images.length) return reviewed;
 
   const cards = images
     .map((image) => `
@@ -1466,7 +1092,7 @@ function renderExplanationImages(question) {
   return `
     <section class="diagram-panel" aria-label="辅助理解图">
       <h4>辅助理解图</h4>
-      <div class="diagram-grid">${cards}</div>
+      ${reviewed || `<div class="diagram-grid">${cards}</div>`}
     </section>
   `;
 }
@@ -1560,6 +1186,17 @@ function renderInlineGuideImages(images = []) {
     <div class="point-image-grid">
       ${images
         .map((src) => {
+          const reviewed = window.NSCA_STUDY_GUIDES.figures[src];
+          if (reviewed) return `
+            <figure class="point-figure reviewed-figure">
+              <figcaption><strong>${reviewed.title}</strong>
+                <p class="figure-correction">${reviewed.correction}</p>
+                <span>用户供图 · 原图含简化表述，请以以上说明为准。</span>
+                <a href="${reviewed.source}" target="_blank" rel="noopener noreferrer">核对原理与研究</a>
+                <a href="${src}" target="_blank" rel="noopener noreferrer">查看原尺寸图片</a>
+              </figcaption>
+              ${renderZoomableImage({ src, title: reviewed.title, caption: reviewed.correction })}
+            </figure>`;
           const [title, caption] = unitGuideImageMeta[src] || ["辅助图", "用于辅助理解这一条考点。"];
           return `
             <figure class="point-figure">
@@ -1605,11 +1242,11 @@ function renderGuideSubunits(subunits = []) {
 }
 
 function renderUnitGuide(unit) {
-  const deepGuide = unitDeepGuides[unit.id];
+  const deepGuide = window.NSCA_STUDY_GUIDES.units[unit.id];
   if (deepGuide) {
-    const addenda = unitGuideAddenda[unit.id] || [];
     return `
-      ${renderGuideSubunits([...deepGuide.subunits, ...addenda])}
+      <p class="study-scope">${deepGuide.scope}</p>
+      ${renderGuideSubunits(deepGuide.subunits)}
     `;
   }
   const guide = unitExamGuides[unit.id];
@@ -1628,7 +1265,12 @@ function renderUnitGuide(unit) {
 }
 
 function renderNotes() {
-  els.notesGrid.innerHTML = "";
+  els.notesGrid.innerHTML = `<section class="study-blueprint">
+    <h3>按官方范围复习，不承诺某题必考</h3>
+    <p>官方四领域：咨询与评估 23% · 计划设计 29% · 计划执行 36% · 安全、应急与法律 12%。本应用七单元是学习分组，不是七个官方考试领域。</p>
+    <p>先掌握核心概念，再练情境判断与动作辨识。心电图波形判读未被大纲单列，已移至补充；这不代表保证不会考。</p>
+    <p><a href="${window.NSCA_STUDY_GUIDES.sources.blueprint}" target="_blank" rel="noopener noreferrer">官方详细大纲</a> · <a href="${window.NSCA_STUDY_GUIDES.sources.exam}" target="_blank" rel="noopener noreferrer">考试结构</a> · 核对日期：2026-10-08</p>
+  </section>`;
   state.syllabus.forEach((unit, index) => {
     const card = document.createElement("section");
     card.className = "note-card unit-guide-card";
@@ -1640,7 +1282,7 @@ function renderNotes() {
         </summary>
         ${renderUnitGuide(unit)}
         <details class="source-details">
-          <summary>资料来源</summary>
+          <summary>原始资料清单（不代表逐条证据）</summary>
           <div class="source-list">
             ${unit.sourceFiles.map((source) => `<span class="pill">${source}</span>`).join("")}
           </div>
@@ -1881,6 +1523,10 @@ function bindEvents() {
 async function init() {
   loadProgress();
   await loadData();
+  state.syllabus = state.syllabus.map((unit) => {
+    const reviewed = window.NSCA_STUDY_GUIDES.units[unit.id];
+    return reviewed ? { ...unit, keyPoints: reviewed.keyPoints, examFocus: [reviewed.scope] } : unit;
+  });
   restoreQuizSession();
   bindEvents();
   renderAll();
